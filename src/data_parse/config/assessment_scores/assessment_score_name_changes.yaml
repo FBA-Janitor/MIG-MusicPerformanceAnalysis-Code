@@ -1,0 +1,281 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      15 Sep 2022
+# Last Updated: 15 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+# columns: <year>: <band>: <oldname>: <newname>
+columns:
+  2013:
+    concert:
+      CategoryGroup: ScoreGroup
+      Category: Description
+    middle:
+      CategoryGroup: ScoreGroup
+      Category: Description
+    symphonic:
+      CategoryGroup: ScoreGroup
+      Category: Description
+
+# assessments:
+# - OldScoreGroup: <old score group name, required>
+#   OldDescription: <old description name, optional if affecting entire score group>
+#   NewScoreGroup: <new score group name, optional if unchanged>
+#   NewDescription: <new description name, optional if unchanged>
+#   Affects:
+#   - Year: <year of band affected>
+#     BandLevel:
+#     - <level of band affected in that year>
+#   Reason: <reason for change>
+#
+# Type of assessment score name change
+# - Variant : Changing variations and/or typos of obviously the same term for standardization
+# - ReGroup : The score has been moved to another score group
+# - Similar : Very similar, but not the same, scores
+# - Legacy  : These scores that are no longer in use in subsequent years.
+#
+# CHANGES WILL BE PROCESSED IN THE ORDER IT APPEARS BELOW!
+
+assessments:
+  # legacy scores
+  - OldScoreGroup: Scales
+    OldDescription: Articulation & Style
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - middle
+      - Year: 2014
+        BandLevel:
+          - middle
+    Reason: Legacy
+
+  - OldScoreGroup: Scales
+    OldDescription: Musicality, Tempo, & Style
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+    Reason: Legacy
+  - OldScoreGroup: Scales
+    OldDescription: Note Accuracy/Consistency
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+    Reason: Legacy
+    
+  - OldScoreGroup: Scales
+    OldDescription: Tone Quality
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+    Reason: Legacy
+
+  - OldScoreGroup: Lyrical Etude
+    OldDescription: Artistry
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+    Reason: Legacy
+
+  - OldScoreGroup: Technical Etude
+    OldDescription: Artistry
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - concert
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - symphonic
+    Reason: Legacy
+
+  - OldScoreGroup: Sight-Reading
+    OldDescription: Artistry
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+    Reason: Legacy
+
+  - OldScoreGroup: Technical Etude
+    OldDescription: Articulation
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - middle
+      - Year: 2014
+        BandLevel:
+          - middle
+    Reason: Legacy
+
+  # chromatic scale
+  - OldScoreGroup: Chromatic Scale
+    OldDescription: Chromatic
+    NewDescription: Chromatic Scale
+    Affects:
+      - Year: 2014
+        BandLevel:
+          - middle
+    Reason: Variant
+
+  - OldScoreGroup: Scales
+    OldDescription: Chromatic
+    NewScoreGroup: Chromatic Scale
+    NewDescription: Chromatic Scale
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - middle
+          - concert
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - symphonic
+    Reason: ReGroup
+
+  # major scales
+  - OldScoreGroup: Scales
+    NewScoreGroup: Major Scales
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - middle
+          - concert
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+    Reason: ReGroup
+
+  # Musicality spellings
+  - OldScoreGroup: Sight-Reading
+    OldDescription: Musicallity, Tempo & Style
+    NewDescription: Musicality, Tempo, & Style
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - middle
+          - concert
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2015
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2016
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2017
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2018
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+    Reason: Variant
+
+  - OldScoreGroup: Technical Etude
+    OldDescription: Musicality, Tempo & Style
+    NewDescription: Musicality, Tempo, & Style
+    Affects:
+      - Year: 2015
+        BandLevel:
+          - middle
+      - Year: 2016
+        BandLevel:
+          - middle      
+      - Year: 2017
+        BandLevel:
+          - middle
+      - Year: 2018
+        BandLevel:
+          - middle
+    Reason: Variant
+
+  - OldScoreGroup: Technical Etude
+    OldDescription: Musicallity, Tempo & Style
+    NewDescription: Musicality, Tempo, & Style
+    Affects:
+      - Year: 2013
+        BandLevel:
+          - middle
+          - concert
+          - symphonic
+      - Year: 2014
+        BandLevel:
+          - concert
+          - middle
+          - symphonic
+      - Year: 2015
+        BandLevel:
+          - concert
+          - symphonic
+      - Year: 2016
+        BandLevel:
+          - concert
+          - symphonic      
+      - Year: 2017
+        BandLevel:
+          - concert
+          - symphonic
+      - Year: 2018
+        BandLevel:
+          - concert
+          - symphonic
+    Reason: Variant
