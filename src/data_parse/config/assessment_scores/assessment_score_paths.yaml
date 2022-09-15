@@ -1,0 +1,49 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      15 Sep 2022
+# Last Updated: 15 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+paths:
+  2013-2014:
+    concert: ./fba-canonical/audio/2013-2014/Concert Band Scores.xlsx
+    middle: ./fba-canonical/audio/2013-2014/Middle School.xlsx
+    symphonic: ./fba-canonical/audio/2013-2014/Symphonic Band Scores.xlsx
+  2014-2015:
+    concert: ./fba-canonical/audio/2014-2015/Concert Band 2014-2015.xlsx
+    middle: ./fba-canonical/audio/2014-2015/Middle School 2014-2015.xlsx
+    symphonic: ./fba-canonical/audio/2014-2015/Symphonic Band 2014-2015.xlsx
+  2015-2016:
+    concert: ./fba-canonical/audio/2015-2016/Concert Band 2015-2016.xlsx
+    middle: ./fba-canonical/audio/2015-2016/Middle School 2015-2016.xlsx
+    symphonic: ./fba-canonical/audio/2015-2016/Symphonic Band 2015-2016.xlsx
+  2016-2017:
+    concert:
+      ./fba-canonical/audio/2016-2017/FBA All-State Concert Band Audition Data
+      2016-2017.xlsx
+    middle:
+      ./fba-canonical/audio/2016-2017/FBA All-State Middle School Band Audition
+      Data 2016-2017.xlsx
+    symphonic:
+      ./fba-canonical/audio/2016-2017/FBA All-State Symphonic Band Audition
+      Data 2016-2017.xlsx
+  2017-2018:
+    concert:
+      ./fba-canonical/audio/2017-2018/FBA All-State Concert Band 9th 10th grade
+      2017-2018.xlsx
+    middle: ./fba-canonical/audio/2017-2018/FBA All-State Middle School 2017-2018.xlsx
+    symphonic:
+      ./fba-canonical/audio/2017-2018/FBA All-State Symphonic Band 11th 12th
+      Grade 2017-2018.xlsx
+  2018-2019:
+    concert:
+      ./fba-canonical/audio/2018-2019/FBA All-State Concert Band 9th 10th grade
+      2018-2019.xlsx
+    middle: ./fba-canonical/audio/2018-2019/FBA All-State Middle School 2018-2019.xlsx
+    symphonic:
+      ./fba-canonical/audio/2018-2019/FBA All-State Symphonic Band 11th 12th
+      Grade 2018-2019.xlsx

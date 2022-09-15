@@ -25,7 +25,12 @@ The project folder organization should look as follows:
     - `cleaned` is where new symlinks should go. See [Folder Structure](#folder-structure).
 - `MIG-FBA-PitchTracking` is a new repo for storing pitch track data. Clone [here](https://github.com/FBA-Janitor/MIG-FBA-PitchTracking).
 
-**ALWAYS USE RELATIVE PATHS WITH RESPECT TO THIS STRUCTURE!**
+**ALWAYS USE RELATIVE PATHS!**
+For YAML files, use relative path relative to the top level project folder. E.g., this file is 
+```
+./MIG-MusicPerformanceAnalysis-Code/src/data_parse/README.md
+```
+regardless of where the code using that YAML may be located at. This allows the YAML to also be used in other codes easily.
 
 
 
