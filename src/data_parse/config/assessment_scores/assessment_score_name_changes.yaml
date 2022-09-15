@@ -42,201 +42,135 @@ columns:
 
 assessments:
   # legacy scores
-
+  ## timpani
   - OldScoreGroup: Reading-Timpani
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - middle
-          - symphonic
+        BandLevel: [middle, symphonic]
     Reason: Legacy
 
-
-
+  ## scales
   - OldScoreGroup: Scales
     OldDescription: Articulation & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
+        BandLevel: [middle]
       - Year: 2014
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Legacy
 
   - OldScoreGroup: Scales
     OldDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
 
   - OldScoreGroup: Scales
     OldDescription: Note Accuracy/Consistency
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
-    
+
   - OldScoreGroup: Scales
     OldDescription: Note Accuracy
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
 
-    
   - OldScoreGroup: Scales
     OldDescription: Musicality, Phrasing & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
 
   - OldScoreGroup: Scales
     OldDescription: Tempo & Consistency
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
-    
+
   - OldScoreGroup: Scales
     OldDescription: Tone Quality
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
 
   - OldScoreGroup: Major Scales
     OldDescription: Note Accuracy
     Affects:
       - Year: 2014
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Legacy
 
-    
   - OldScoreGroup: Major Scales
     OldDescription: Musicality, Phrasing & Style
     Affects:
       - Year: 2014
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Legacy
 
   - OldScoreGroup: Major Scales
     OldDescription: Tempo & Consistency
     Affects:
       - Year: 2014
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Legacy
 
+  ## artistry/articulation
   - OldScoreGroup: Lyrical Etude
     OldDescription: Artistry
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
 
   - OldScoreGroup: Sight-Reading
     OldDescription: Artistry
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Legacy
 
   - OldScoreGroup: Technical Etude
     OldDescription: Artistry
     Affects:
       - Year: 2013
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
     Reason: Legacy
 
   - OldScoreGroup: Technical Etude
     OldDescription: Articulation
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
+        BandLevel: [middle]
       - Year: 2014
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Legacy
 
   # chromatic scale
@@ -245,8 +179,7 @@ assessments:
     NewDescription: Chromatic Scale
     Affects:
       - Year: 2014
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Variant
 
   - OldScoreGroup: Scales
@@ -255,51 +188,47 @@ assessments:
     NewDescription: Chromatic Scale
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
     Reason: Regroup
 
-  # Musicality spellings
+  # musicality, tempo, & style spellings
+
+  - OldScoreGroup: Lyrical Etude
+    OldDescription: Musicallity, Tempo & Style
+    NewDescription: Musicality, Tempo, & Style
+    Affects:
+      - Year: 2013
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2014
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2015
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2016
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2017
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2018
+        BandLevel: [concert, middle, symphonic]
+    Reason: Variant
+  
   - OldScoreGroup: Sight-Reading
     OldDescription: Musicallity, Tempo & Style
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2015
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2016
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2017
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2018
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Variant
 
   - OldScoreGroup: Technical Etude
@@ -307,17 +236,13 @@ assessments:
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2015
-        BandLevel:
-          - middle
+        BandLevel: [middle]
       - Year: 2016
-        BandLevel:
-          - middle      
+        BandLevel: [middle]
       - Year: 2017
-        BandLevel:
-          - middle
+        BandLevel: [middle]
       - Year: 2018
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Variant
 
   - OldScoreGroup: Technical Etude
@@ -325,160 +250,45 @@ assessments:
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2015
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
       - Year: 2016
-        BandLevel:
-          - concert
-          - symphonic      
+        BandLevel: [concert, symphonic]
       - Year: 2017
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
       - Year: 2018
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
     Reason: Variant
-
 
   - OldScoreGroup: Mallet Etude
     OldDescription: Musicality, Tempo & Style
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2015
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
       - Year: 2016
-        BandLevel:
-          - concert
-          - symphonic      
+        BandLevel: [concert, symphonic]
       - Year: 2017
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
       - Year: 2018
-        BandLevel:
-          - concert
-          - symphonic
+        BandLevel: [concert, symphonic]
     Reason: Variant
 
-  # Percussion-specific
-
-  - OldScoreGroup: Mallet Etude
-    OldDescription: Note Accuracy
-    NewDescription: Note Accuracy & Tone
-    Affects:
-      - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
-      - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-    Reason: Similar
-
-
-  - OldScoreGroup: Timpani Etude
-    OldDescription: Note Accuracy
-    NewDescription: Tuning Accuracy
-    Affects:
-      - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
-      - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-    Reason: Similar
-
-  - OldScoreGroup: Snare Etude
-    OldDescription: Note Accuracy
-    NewDescription: Rudimental Accuracy
-    Affects:
-      - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
-      - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-    Reason: Similar
-
-  
   - OldScoreGroup: Reading-Mallet
     OldDescription: Musicality & Style
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-      - Year: 2015
-        BandLevel:
-          - symphonic
-      - Year: 2016
-        BandLevel:
-          - symphonic
-      - Year: 2017
-        BandLevel:
-          - symphonic
-      - Year: 2018
-        BandLevel:
-          - symphonic
-    Reason: Similar
-
-  - OldScoreGroup: Reading-Snare
-    OldDescription: Musicality & Style
-    NewDescription: Musicality, Tempo, & Style
-    Affects:
-      - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
-      - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2015
         BandLevel:
           - symphonic
@@ -516,83 +326,23 @@ assessments:
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2015
-        BandLevel:
-          - middle
+        BandLevel: [middle]
       - Year: 2016
-        BandLevel:
-          - middle
+        BandLevel: [middle]
       - Year: 2017
-        BandLevel:
-          - middle
+        BandLevel: [middle]
       - Year: 2018
-        BandLevel:
-          - middle
+        BandLevel: [middle]
     Reason: Variant
-
-  - OldScoreGroup: Reading-Mallet
-    OldDescription: Rhythmic Accuracy
-    NewDescription: Rhythmic Accuracy & Articulation
-    Affects:
-      - Year: 2015
-        BandLevel:
-          - middle
-      - Year: 2016
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-      - Year: 2017
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-      - Year: 2018
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-    Reason: Similar
-
-
-  - OldScoreGroup: Reading-Snare
-    OldDescription: Rhythmic Accuracy
-    NewDescription: Rhythmic Accuracy & Articulation
-    Affects:
-      - Year: 2015
-        BandLevel:
-          - middle
-      - Year: 2016
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-      - Year: 2017
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-      - Year: 2018
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
-    Reason: Similar
-
 
   - OldScoreGroup: Snare Etude
     OldDescription: Musicallyty, Tempo & Style
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Variant
 
   - OldScoreGroup: Snare Etude
@@ -600,37 +350,105 @@ assessments:
     NewDescription: Musicality, Tempo, & Style
     Affects:
       - Year: 2015
+        BandLevel: [concert, symphonic]
+      - Year: 2016
+        BandLevel: [concert, symphonic]
+
+      - Year: 2017
+        BandLevel: [concert, symphonic]
+
+      - Year: 2018
+        BandLevel: [concert, symphonic]
+    Reason: Variant
+
+  - OldScoreGroup: Reading-Snare
+    OldDescription: Musicality & Style
+    NewDescription: Musicality, Tempo, & Style
+    Affects:
+      - Year: 2013
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2014
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2015
         BandLevel:
-          - concert
           - symphonic
       - Year: 2016
         BandLevel:
-          - concert
           - symphonic
-          
       - Year: 2017
         BandLevel:
-          - concert
           - symphonic
-          
       - Year: 2018
         BandLevel:
-          - concert
           - symphonic
-    Reason: Variant
+    Reason: Similar
+
+  # percussion-specific
+
+  - OldScoreGroup: Mallet Etude
+    OldDescription: Note Accuracy
+    NewDescription: Note Accuracy & Tone
+    Affects:
+      - Year: 2013
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2014
+        BandLevel: [concert, middle, symphonic]
+    Reason: Similar
+
+  - OldScoreGroup: Timpani Etude
+    OldDescription: Note Accuracy
+    NewDescription: Tuning Accuracy
+    Affects:
+      - Year: 2013
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2014
+        BandLevel: [concert, middle, symphonic]
+    Reason: Similar
+
+  - OldScoreGroup: Snare Etude
+    OldDescription: Note Accuracy
+    NewDescription: Rudimental Accuracy
+    Affects:
+      - Year: 2013
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2014
+        BandLevel: [concert, middle, symphonic]
+    Reason: Similar
+
+  - OldScoreGroup: Reading-Mallet
+    OldDescription: Rhythmic Accuracy
+    NewDescription: Rhythmic Accuracy & Articulation
+    Affects:
+      - Year: 2015
+        BandLevel: [middle]
+      - Year: 2016
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2017
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2018
+        BandLevel: [concert, middle, symphonic]
+    Reason: Similar
+
+  - OldScoreGroup: Reading-Snare
+    OldDescription: Rhythmic Accuracy
+    NewDescription: Rhythmic Accuracy & Articulation
+    Affects:
+      - Year: 2015
+        BandLevel: [middle]
+      - Year: 2016
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2017
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2018
+        BandLevel: [concert, middle, symphonic]
+    Reason: Similar
 
   # major scales
   - OldScoreGroup: Scales
     NewScoreGroup: Major Scales
     Affects:
       - Year: 2013
-        BandLevel:
-          - middle
-          - concert
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
       - Year: 2014
-        BandLevel:
-          - concert
-          - middle
-          - symphonic
+        BandLevel: [concert, middle, symphonic]
     Reason: Regroup
