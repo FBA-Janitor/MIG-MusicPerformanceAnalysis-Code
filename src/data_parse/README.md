@@ -2,7 +2,7 @@
 
 ## List of Instruments
 ```
-'Percussion',
+['Percussion',
  'Euphonium',
  'Trumpet',
  'Bb Clarinet',
@@ -19,13 +19,12 @@
  'Bass Clarinet',
  'Bb Contrabass Clarinet',
  'Piccolo',
- 'EbClarinet',
+ 'Eb Clarinet',
  'Eb Contra Alto Clarinet',
  'Bass Trombone',
- 'Eb Clarinet',
  'Contrabassoon',
  'Soprano Sax',
- 'Piano'
+ 'Piano']
 ```
 
 ## General Guidelines
