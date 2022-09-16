@@ -1,5 +1,33 @@
 # Data parsing and organization code
 
+## List of Instruments
+```
+'Percussion',
+ 'Euphonium',
+ 'Trumpet',
+ 'Bb Clarinet',
+ 'French Horn',
+ 'Alto Saxophone',
+ 'Flute',
+ 'Trombone',
+ 'Oboe',
+ 'English Horn',
+ 'Bassoon',
+ 'Tuba',
+ 'Tenor Saxophone',
+ 'Bari Saxophone',
+ 'Bass Clarinet',
+ 'Bb Contrabass Clarinet',
+ 'Piccolo',
+ 'EbClarinet',
+ 'Eb Contra Alto Clarinet',
+ 'Bass Trombone',
+ 'Eb Clarinet',
+ 'Contrabassoon',
+ 'Soprano Sax',
+ 'Piano'
+```
+
 ## General Guidelines
 
 The project folder organization should look as follows:
