@@ -59,19 +59,6 @@ cleaned
 │   └── summary
 │       ├── maximum_scores.csv
 │       └── <year>_<band_type>.csv
-├── audio
-│       ├── 2013  
-│       │   ├── concert
-│       │   │   ├── Alto Saxophone
-│       │   │   │   ├── 28667.json
-│       │   │   │   └── ...
-│       │   │   └── ...
-│       │   └── ...
-│       ├── <year>
-│       │   └── <band_type>
-│       │       └── <instrument>
-│       │            └── <student_id>.json
-│       └── ...
 ```
 
 ### Audio (Karn)
