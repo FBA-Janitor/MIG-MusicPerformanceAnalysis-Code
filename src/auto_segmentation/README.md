@@ -58,3 +58,9 @@ If you would like to use these steps individually for any particular reason they
          - numberOfMusicalExercises: the number of musical exercises, defaults to 5 which is the historical number of exercises but if it changes in the future this will need to be changed for successful classifications.
          
  
+## Update 09/16/2022
+Code reviving ...
+
+Run the command below to install the required packages
+
+```conda create --name <name> --file requirements.txt```
