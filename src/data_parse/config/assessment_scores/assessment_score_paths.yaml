@@ -1,0 +1,86 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      15 Sep 2022
+# Last Updated: 15 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+max_scores: ./fba-canonical/All-State Bands Max Score.xlsx
+assessment_scores:
+  2013:
+    concert:
+      excel: ./fba-canonical/audio/2013-2014/Concert Band Scores.xlsx
+      sheet: Raw Scores
+    middle:
+      excel: ./fba-canonical/audio/2013-2014/Middle School.xlsx
+      sheet: Raw Scores
+    symphonic:
+      excel: ./fba-canonical/audio/2013-2014/Symphonic Band Scores.xlsx
+      sheet: Raw Scores
+  2014:
+    concert:
+      excel: ./fba-canonical/audio/2014-2015/Concert Band 2014-2015.xlsx
+      sheet: Raw Data
+    middle:
+      excel: ./fba-canonical/audio/2014-2015/Middle School 2014-2015.xlsx
+      sheet: Raw Data
+    symphonic:
+      excel: ./fba-canonical/audio/2014-2015/Symphonic Band 2014-2015.xlsx
+      sheet: Raw Data
+  2015:
+    concert:
+      excel: ./fba-canonical/audio/2015-2016/Concert Band 2015-2016.xlsx
+      sheet: Raw Data
+    middle:
+      excel: ./fba-canonical/audio/2015-2016/Middle School 2015-2016.xlsx
+      sheet: Raw Data
+    symphonic:
+      excel: ./fba-canonical/audio/2015-2016/Symphonic Band 2015-2016.xlsx
+      sheet: Raw Data
+  2016:
+    concert:
+      excel:
+        ./fba-canonical/audio/2016-2017/FBA All-State Concert Band Audition Data
+        2016-2017.xlsx
+      sheet: Raw Data
+    middle:
+      excel:
+        ./fba-canonical/audio/2016-2017/FBA All-State Middle School Band Audition
+        Data 2016-2017.xlsx
+      sheet: Raw
+    symphonic:
+      excel:
+        ./fba-canonical/audio/2016-2017/FBA All-State Symphonic Band Audition Data
+        2016-2017.xlsx
+      sheet: Raw Data
+  2017:
+    concert:
+      excel:
+        ./fba-canonical/audio/2017-2018/FBA All-State Concert Band 9th 10th grade
+        2017-2018.xlsx
+      sheet: Raw Data
+    middle:
+      excel: ./fba-canonical/audio/2017-2018/FBA All-State Middle School 2017-2018.xlsx
+      sheet: Raw Data
+    symphonic:
+      excel:
+        ./fba-canonical/audio/2017-2018/FBA All-State Symphonic Band 11th 12th
+        Grade 2017-2018.xlsx
+      sheet: Raw Data
+  2018:
+    concert:
+      excel:
+        ./fba-canonical/audio/2018-2019/FBA All-State Concert Band 9th 10th grade
+        2018-2019.xlsx
+      sheet: Sheet1
+    middle:
+      excel: ./fba-canonical/audio/2018-2019/FBA All-State Middle School 2018-2019.xlsx
+      sheet: Raw Data
+    symphonic:
+      excel:
+        ./fba-canonical/audio/2018-2019/FBA All-State Symphonic Band 11th 12th
+        Grade 2018-2019.xlsx
+      sheet: Raw Data

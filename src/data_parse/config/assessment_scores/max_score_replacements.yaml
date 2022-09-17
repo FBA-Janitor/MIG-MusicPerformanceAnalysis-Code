@@ -1,0 +1,325 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      15 Sep 2022
+# Last Updated: 15 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+missing:
+  2015: 
+    concert:
+      Reading-Snare:
+        Rhythmic Accuracy & Articulation:
+          Description: Rhythmic Accuracy
+    symphonic:
+      Reading-Snare:
+        Rhythmic Accuracy & Articulation:
+          Description: Rhythmic Accuracy
+  #FIXME: most are hot fixex for 2018 by looking at latest available similar scores, also additional fixes for typos.
+  2018: 
+    concert: 
+      Chromatic Scale:
+        Chromatic Scale:
+          Year: 2017
+      Lyrical Etude:
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Major Scales:
+        A:
+          Year: 2017
+        Ab:
+          Year: 2017
+        B:
+          Year: 2017
+        Bb:
+          Year: 2017
+        C:
+          Year: 2017
+        D:
+          Year: 2017
+        Db:
+          Year: 2017
+        E:
+          Year: 2017
+        Eb:
+          Year: 2017
+        F:
+          Year: 2017
+        G:
+          Year: 2017
+        Gb:
+          Year: 2017
+      Mallet Etude:
+        Musicality, Tempo & Style:
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Reading-Mallet:
+        Musicality,Tempo, & Style:
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Reading-Snare:
+        Musicality, Tempo, & Style:
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Sight-Reading:
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Snare Etude:
+        Musicality, Tempo & Style:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Rudimental Accuracy:
+          Year: 2017
+      Technical Etude:
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Timpani Etude:
+        Musicality, Tempo, & Style:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tuning Accuracy:
+          Year: 2017
+    middle: 
+      Chromatic Scale:
+        Chromatic Scale:
+          Year: 2017
+      Lyrical Etude:
+        Musicality, Tempo & Style:
+          Description: Musicallity, Tempo & Style
+          Year: 2017
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Major Scales:
+        A:
+          Year: 2017
+        Ab:
+          Year: 2017
+        B:
+          Year: 2017
+        Bb:
+          Year: 2017
+        C:
+          Year: 2017
+        D:
+          Year: 2017
+        Db:
+          Year: 2017
+        E:
+          Year: 2017
+        Eb:
+          Year: 2017
+        F:
+          Year: 2017
+        G:
+          Year: 2017
+        Gb:
+          Year: 2017
+      Mallet Etude:
+        Musicality, Tempo & Style:
+          Year: 2017
+        Musicality, Tempo, & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Reading-Mallet:
+        Musicality, Tempo, & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Musicality,Tempo, & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Musicality, Tempo & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Reading-Snare:
+        Musicality, Tempo, & Style:
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Sight-Reading:
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Snare Etude:
+        Musicality, Tempo & Style:
+          Year: 2017
+        Musicality, Tempo, & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Rudimental Accuracy:
+          Year: 2017
+      Technical Etude:
+        Musicality, Tempo & Style:
+          Description: Musicallity, Tempo & Style
+          Year: 2017
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Timpani Etude:
+        Musicality, Tempo, & Style:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tuning Accuracy:
+          Year: 2017
+    symphonic: 
+      Chromatic Scale:
+        Chromatic Scale:
+          Year: 2017
+      Lyrical Etude:
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Major Scales:
+        A:
+          Year: 2017
+        Ab:
+          Year: 2017
+        B:
+          Year: 2017
+        Bb:
+          Year: 2017
+        C:
+          Year: 2017
+        D:
+          Year: 2017
+        Db:
+          Year: 2017
+        E:
+          Year: 2017
+        Eb:
+          Year: 2017
+        F:
+          Year: 2017
+        G:
+          Year: 2017
+        Gb:
+          Year: 2017
+      Mallet Etude:
+        Musicality, Tempo & Style:
+          Year: 2017
+        Musicality & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Reading-Mallet:
+        Musicality, Tempo, & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Musicality & Style:
+          Description: Musicality, Tempo & Style
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Reading-Snare:
+        Musicality & Style:
+          Description: Musicality, Tempo, & Style
+          Year: 2017
+        Musicality, Tempo, & Style:
+          Year: 2017
+        Note Accuracy & Tone:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+      Sight-Reading:
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Snare Etude:
+        Musicality, Tempo & Style:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Rudimental Accuracy:
+          Year: 2017
+      Technical Etude:
+        Musicallity, Tempo & Style:
+          Year: 2017
+        Note Accuracy:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tone Quality:
+          Year: 2017
+      Timpani Etude:
+        Musicality, Tempo, & Style:
+          Year: 2017
+        Rhythmic Accuracy:
+          Year: 2017
+        Tuning Accuracy:
+          Year: 2017
+        
