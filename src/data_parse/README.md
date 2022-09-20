@@ -1,5 +1,32 @@
 # Data parsing and organization code
 
+## List of Instruments
+```
+['Percussion',
+ 'Euphonium',
+ 'Trumpet',
+ 'Bb Clarinet',
+ 'French Horn',
+ 'Alto Saxophone',
+ 'Flute',
+ 'Trombone',
+ 'Oboe',
+ 'English Horn',
+ 'Bassoon',
+ 'Tuba',
+ 'Tenor Saxophone',
+ 'Bari Saxophone',
+ 'Bass Clarinet',
+ 'Bb Contrabass Clarinet',
+ 'Piccolo',
+ 'Eb Clarinet',
+ 'Eb Contra Alto Clarinet',
+ 'Bass Trombone',
+ 'Contrabassoon',
+ 'Soprano Sax',
+ 'Piano']
+```
+
 ## General Guidelines
 
 The project folder organization should look as follows:
@@ -59,19 +86,6 @@ cleaned
 │   └── summary
 │       ├── maximum_scores.csv
 │       └── <year>_<band_type>.csv
-├── audio
-│       ├── 2013  
-│       │   ├── concert
-│       │   │   ├── Alto Saxophone
-│       │   │   │   ├── 28667.json
-│       │   │   │   └── ...
-│       │   │   └── ...
-│       │   └── ...
-│       ├── <year>
-│       │   └── <band_type>
-│       │       └── <instrument>
-│       │            └── <student_id>.json
-│       └── ...
 ```
 
 ### Audio (Karn)
