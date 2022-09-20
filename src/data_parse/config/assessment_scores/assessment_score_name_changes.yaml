@@ -294,17 +294,13 @@ assessments:
       - Year: 2014
         BandLevel: [concert, middle, symphonic]
       - Year: 2015
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
       - Year: 2016
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
       - Year: 2017
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
       - Year: 2018
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
     Reason: Similar
 
   - OldScoreGroup: Reading-Mallet
@@ -374,17 +370,13 @@ assessments:
       - Year: 2014
         BandLevel: [concert, middle, symphonic]
       - Year: 2015
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
       - Year: 2016
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
       - Year: 2017
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
       - Year: 2018
-        BandLevel:
-          - symphonic
+        BandLevel: [symphonic]
     Reason: Similar
 
   # percussion-specific
