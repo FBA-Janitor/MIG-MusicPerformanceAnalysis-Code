@@ -1,4 +1,6 @@
 from asyncore import write
+from itertools import product
+from math import prod
 from typing import Optional
 import pandas as pd
 import numpy as np
@@ -82,7 +84,7 @@ def get_max_score_df(
         assert os.path.exists(csv_path)
         return pd.read_csv(csv_path)
     else:
-        xlsx_config = read_yaml_to_dict(xlsx_config_path)
+        xlsx_config = read_yaml_to_dict(root, xlsx_config_path)
         dfms = pd.read_excel(os.path.join(root, xlsx_config["max_scores"]))
 
         if write_csv:
@@ -99,14 +101,19 @@ def get_max_score_from_df(
     instrument: str,
     max_score_df: pd.DataFrame,
     missing_max_score_config: dict,
+    trial: int = 0
 ):
+    if trial > 1:
+        print(year, band, score_grp, desc)
+        print(f"Trial: {trial}")
+        raise RecursionError
 
     df = max_score_df
 
-    isperc = instrument == "Percussion"
+    isperc = (instrument == "Percussion")
 
     if isperc:
-        df = df[df["Percussion"] == float(isperc)]
+        df = df[df["Percussion"] == 1.0]
     else:
         df = df[df["Percussion"].isna()]
 
@@ -118,15 +125,31 @@ def get_max_score_from_df(
 
     if len(df["MaxScore"].to_list()) == 0:
         try:
-            replacement = missing_max_score_config["missing"][year][band][score_grp][
-                desc
-            ]
+            for replacement_dict in missing_max_score_config["missing"]:
 
-            score_grp = replacement.get("ScoreGroup", score_grp)
-            desc = replacement.get("Description", desc)
-            instrument = replacement.get("Instrument", instrument)
-            year = replacement.get("Year", year)
-            band = replacement.get("BandLevel", band)
+                conditions = replacement_dict["Conditions"]
+
+                if year not in conditions.get("Year", [year]):
+                    continue
+
+                if band not in conditions.get("BandLevel", [band]):
+                    continue
+
+                if score_grp not in conditions.get("ScoreGroup", [score_grp]):
+                    continue
+
+                if desc not in conditions.get("Description", [desc]):
+                    continue
+
+                replacement = replacement_dict["ReplaceWith"]
+
+                score_grp = replacement.get("ScoreGroup", score_grp)
+                desc = replacement.get("Description", desc)
+                instrument = replacement.get("Instrument", instrument)
+                year = replacement.get("Year", year)
+                band = replacement.get("BandLevel", band)
+
+                break
 
             return get_max_score_from_df(
                 year,
@@ -136,6 +159,7 @@ def get_max_score_from_df(
                 instrument,
                 max_score_df,
                 missing_max_score_config,
+                trial=trial + 1
             )
         except KeyError as ke:
             print(year, band, score_grp, desc, instrument)
@@ -153,7 +177,7 @@ def parse_summary_sheet(
     write_csv: bool = False,
 ):
 
-    xlsx_config = read_yaml_to_dict(xlsx_config_path, root)
+    xlsx_config = read_yaml_to_dict(root, xlsx_config_path)
 
     df = pd.read_excel(
         os.path.join(root, xlsx_config["assessment_scores"][year][band]["excel"]),
@@ -163,7 +187,8 @@ def parse_summary_sheet(
     if write_csv:
         folder = os.path.join(root, data_repo, "cleaned", "assessment", "summary")
         os.makedirs(folder, exist_ok=True)
-        df.to_csv(os.path.join(folder, f"{year}_{band}.csv"), index=False, header=True)
+        print(os.path.join(folder, f"{year}_{band}_raw.csv"))
+        df.to_csv(os.path.join(folder, f"{year}_{band}_raw.csv"), index=False, header=True)
 
     return df
 
@@ -175,10 +200,27 @@ def column_name_update(
     band: str,
     name_change_config_path: str = name_change_config_path,
 ):
-    name_change_config = read_yaml_to_dict(name_change_config_path, root)
+    name_change_config = read_yaml_to_dict(root, name_change_config_path)
     column_name_changes = name_change_config["columns"].get(year, {}).get(band, None)
     if column_name_changes:
         df = df.rename(columns=column_name_changes)
+    return df
+
+
+def instrument_name_update(
+    root: str,
+    df: pd.DataFrame,
+    year: int,
+    band: str,
+    name_change_config_path: str = name_change_config_path,
+):
+    inst_name_change_config = read_yaml_to_dict(root, name_change_config_path)[
+        "instrument"
+    ]
+
+    for oldname, newname in inst_name_change_config.items():
+        df.loc[df["Instrument"] == oldname, "Instrument"] = newname
+
     return df
 
 
@@ -190,7 +232,7 @@ def assessment_name_update(
     name_change_config_path: str = name_change_config_path,
     drop_legacy: bool = True,
 ):
-    name_change_config = read_yaml_to_dict(name_change_config_path, root)
+    name_change_config = read_yaml_to_dict(root, name_change_config_path)
     assessment_name_changes = name_change_config["assessments"]
 
     for name_change in assessment_name_changes:
@@ -236,18 +278,22 @@ def read_summary_csv(
     name_change_config_path: str = name_change_config_path,
     update_column_name: bool = True,
     update_assessment_name: bool = True,
+    update_instrument_name: bool = True,
     drop_legacy: bool = True,
 ):
     summarypath = os.path.join(root, data_repo, "cleaned", "assessment", "summary")
-    df = pd.read_csv(os.path.join(summarypath, f"{year}_{band}.csv"))
+    df = pd.read_csv(os.path.join(summarypath, f"{year}_{band}_raw.csv"))
 
     if update_column_name:
-        df = column_name_update(df, year, band, root, name_change_config_path)
+        df = column_name_update(root, df, year, band, name_change_config_path)
 
     if update_assessment_name:
         df = assessment_name_update(
-            df, year, band, root, name_change_config_path, drop_legacy=drop_legacy
+            root, df, year, band, name_change_config_path, drop_legacy=drop_legacy
         )
+
+    if update_instrument_name:
+        df = instrument_name_update(root, df, year, band, name_change_config_path)
 
     return df
 
@@ -256,6 +302,9 @@ def normalize_summary_csv(
     root: str,
     year: int,
     band: str,
+    update_assessment_name: bool = True,
+    update_instrument_name: bool = True,
+    drop_legacy: bool = True,
     data_repo: str = data_repo,
     xlsx_config_path: str = xlsx_config_path,
     missing_max_score_config_path: str = missing_max_score_config_path,
@@ -264,19 +313,25 @@ def normalize_summary_csv(
 ):
 
     df = read_summary_csv(
+        root,
         year,
         band,
-        root,
         data_repo,
         name_change_config_path,
         update_column_name=True,
         update_assessment_name=False,
+        update_instrument_name=False,
+        drop_legacy=False,
     )
 
     max_score_df = get_max_score_df(
-        xlsx_config_path, root, data_repo, write_csv=False, read_csv=None
+        root,
+        data_repo=data_repo,
+        xlsx_config_path=xlsx_config_path,
+        write_csv=False,
+        read_csv=None,
     )
-    missing_max_score_config = read_yaml_to_dict(missing_max_score_config_path, root)
+    missing_max_score_config = read_yaml_to_dict(root, missing_max_score_config_path)
 
     gb = df.groupby(["ScoreGroup", "Description", "Instrument"])
 
@@ -295,12 +350,116 @@ def normalize_summary_csv(
 
     df["NormalizedScore"] = df["Score"].astype(float) / df["MaxScore"]
 
-    df = assessment_name_update(df, year, band, root, name_change_config_path)
+    if update_assessment_name:
+        df = assessment_name_update(
+            root, df, year, band, name_change_config_path, drop_legacy=drop_legacy
+        )
+
+    if update_instrument_name:
+        df = instrument_name_update(root, df, year, band, name_change_config_path)
+
+    if write_csv == False:
+        return df
 
     if write_csv is not None:
+        if write_csv == True:
+            write_csv = os.path.join(
+                root,
+                data_repo,
+                "cleaned",
+                "assessment",
+                "summary",
+                f"{year}_{band}_normalized.csv",
+            )
+
+        assert type(write_csv) == str
         df.to_csv(write_csv, index=False, header=True)
 
     return df
+
+
+def process(
+    root: str,
+    year: int,
+    band: str,
+    update_assessment_name: bool = True,
+    update_instrument_name: bool = True,
+    drop_legacy: bool = True,
+    write_summary_csv: bool = True,
+    write_normalized_csv: bool = True,
+    data_repo: str = data_repo,
+    xlsx_config_path: str = xlsx_config_path,
+    missing_max_score_config_path: str = missing_max_score_config_path,
+    name_change_config_path: str = name_change_config_path,
+):
+    parse_summary_sheet(
+        root=root,
+        year=year,
+        band=band,
+        data_repo=data_repo,
+        xlsx_config_path=xlsx_config_path,
+        write_csv=write_summary_csv,
+    )
+
+    normalize_summary_csv(
+        root=root,
+        year=year,
+        band=band,
+        update_assessment_name=update_assessment_name,
+        update_instrument_name=update_instrument_name,
+        drop_legacy=drop_legacy,
+        data_repo=data_repo,
+        xlsx_config_path=xlsx_config_path,
+        missing_max_score_config_path=missing_max_score_config_path,
+        name_change_config_path=name_change_config_path,
+        write_csv=write_normalized_csv,
+    )
+
+
+def process_multiyear(
+    root: str,
+    first_year=2013,
+    last_year=2018,
+    middle=True,
+    concert=True,
+    symphonic=True,
+    update_assessment_name: bool = True,
+    update_instrument_name: bool = True,
+    drop_legacy: bool = True,
+    write_summary_csv: bool = True,
+    write_normalized_csv: bool = True,
+    data_repo: str = data_repo,
+    xlsx_config_path: str = xlsx_config_path,
+    missing_max_score_config_path: str = missing_max_score_config_path,
+    name_change_config_path: str = name_change_config_path,
+):
+
+    years = range(first_year, last_year + 1)
+    bands = []
+    if middle:
+        bands.append("middle")
+    if concert:
+        bands.append("concert")
+    if symphonic:
+        bands.append("symphonic")
+
+    yearbands = list(product(years, bands))
+
+    for year, band in tqdm(yearbands):
+        process(
+            root,
+            year,
+            band,
+            update_assessment_name=update_assessment_name,
+            update_instrument_name=update_instrument_name,
+            drop_legacy=drop_legacy,
+            write_summary_csv=write_summary_csv,
+            write_normalized_csv=write_normalized_csv,
+            data_repo=data_repo,
+            xlsx_config_path=xlsx_config_path,
+            missing_max_score_config_path=missing_max_score_config_path,
+            name_change_config_path=name_change_config_path,
+        )
 
 
 if __name__ == "__main__":

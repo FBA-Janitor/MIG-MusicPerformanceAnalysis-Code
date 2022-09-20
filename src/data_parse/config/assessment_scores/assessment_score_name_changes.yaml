@@ -8,6 +8,10 @@
 # Georgia Institute of Technology
 ##################################################
 
+
+instrument:
+  EbClarinet: Eb Clarinet
+
 # columns: <year>: <band>: <oldname>: <newname>
 columns:
   2013:
