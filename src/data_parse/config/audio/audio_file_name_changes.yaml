@@ -1,0 +1,59 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      15 Sep 2022
+# Last Updated: 21 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+filenames:
+  - Year: 2016
+    BandLevel: middle
+    ErrorList:
+    - StudentID: 67227
+      OldFileName: "./fba-canonical/audio/2016-2017/middle-school/67227-fixed/67227-fixed.mp3"
+      Reason: InconsistentNameFormat
+  - Year: 2016
+    BandLevel: concert
+    ErrorList:
+    - StudentID: 65257
+      OldFileName: "./fba-canonical/audio/2016-2017/concert-band/65257 trumpet/65257_trumpet.mp3"
+      Reason: InconsistentNameFormat
+  - Year: 2016
+    BandLevel: symphonic
+    ErrorList:
+    - StudentID: 65260
+      OldFileName: "./fba-canonical/audio/2016-2017/symphonic-band/65260 trumpet/65260_trumpet.mp3"
+      Reason: InconsistentNameFormat
+  - Year: 2017
+    BandLevel: concert
+    ErrorList:
+    - StudentID: 79159
+      OldFileName: "./fba-canonical/audio/2017-2018/concertband/79159(1).mp3"
+      Reason: Duplicate
+    - StudentID: 79293
+      OldFileName: "./fba-canonical/audio/2017-2018/concertband/79293(1).mp3"
+      Reason: Duplicate
+    - StudentID: 79156
+      OldFileName: "./fba-canonical/audio/2017-2018/concertband/79156(1).mp3"
+      Reason: Duplicate
+    - StudentID: 79294
+      OldFileName: "./fba-canonical/audio/2017-2018/concertband/79294(1).mp3"
+      Reason: Duplicate
+    - StudentID: 79292
+      OldFileName: "./fba-canonical/audio/2017-2018/concertband/79292(1).mp3"
+      Reason: Duplicate
+    - StudentID: 79079
+      OldFileName: "./fba-canonical/audio/2017-2018/concertband/79079(1).mp3"
+      Reason: Duplicate
+    - StudentID: 79170
+      OldFileName: "./fba-canonical/audio/2017-2018/concertband/79170(1).mp3"
+      Reason: Duplicate
+  - Year: 2018
+    BandLevel: middle
+    ErrorList:
+    - StudentID: 85982
+      OldFileName: "./fba-canonical/audio/2018-2019/middleschool/85982_copy.mp3"
+      Reason: InconsistentNameFormat

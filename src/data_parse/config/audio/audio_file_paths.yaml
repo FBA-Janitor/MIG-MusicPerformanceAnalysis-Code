@@ -1,0 +1,25 @@
+audio:
+  2013:
+    concert: "./fba-canonical/audio/2013-2014/concertbandscores"
+    middle: "./fba-canonical/audio/2013-2014/middleschoolscores"
+    symphonic: "./fba-canonical/audio/2013-2014/symphonicbandscores"
+  2014:
+    concert: "./fba-canonical/audio/2014-2015/concertband"
+    middle: "./fba-canonical/audio/2014-2015/middleschool"
+    symphonic: "./fba-canonical/audio/2014-2015/symphonicband"
+  2015:
+    concert: "./fba-canonical/audio/2015-2016/concertband"
+    middle: "./fba-canonical/audio/2015-2016/middleschool"
+    symphonic: "./fba-canonical/audio/2015-2016/symphonicband"
+  2016:
+    concert: "./fba-canonical/audio/2016-2017/concert-band"
+    middle: "./fba-canonical/audio/2016-2017/middle-school"
+    symphonic: "./fba-canonical/audio/2016-2017/symphonic-band"
+  2017:
+    concert: "./fba-canonical/audio/2017-2018/concertband"
+    middle: "./fba-canonical/audio/2017-2018/middleschool"
+    symphonic: "./fba-canonical/audio/2017-2018/symphonicband"
+  2018:
+    concert: "./fba-canonical/audio/2018-2019/concertband"
+    middle: "./fba-canonical/audio/2018-2019/middleschool"
+    symphonic: "./fba-canonical/audio/2018-2019/symphonicband"

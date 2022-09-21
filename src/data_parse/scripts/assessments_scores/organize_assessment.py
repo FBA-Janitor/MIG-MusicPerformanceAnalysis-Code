@@ -1,48 +1,13 @@
-from asyncore import write
 from itertools import product
-from math import prod
 from typing import Optional
 import pandas as pd
-import numpy as np
-import re
 
-import os, shutil
-
-import json
+import os
 
 from tqdm import tqdm
-from pprint import pprint
 
-from collections import defaultdict
-
-import yaml
-
-xlsx_config_path = "./MIG-MusicPerformanceAnalysis-Code/src/data_parse/config/assessment_scores/assessment_score_paths.yaml"
-missing_max_score_config_path = "./MIG-MusicPerformanceAnalysis-Code/src/data_parse/config/assessment_scores/max_score_replacements.yaml"
-name_change_config_path = "./MIG-MusicPerformanceAnalysis-Code/src/data_parse/config/assessment_scores/assessment_score_name_changes.yaml"
-data_repo = "MIG-FBA-Data-Cleaning"
-
-
-def read_yaml_to_dict(root: str, path_relative_to_root: str) -> dict:
-    """
-    Read YAML file into a dictionary
-
-    Parameters
-    ----------
-    root : str
-        root directory of the FBA project
-    path_relative_to_root : str
-        path of the YAML file, relative to `root`
-
-    Returns
-    -------
-    dict
-        Dictionary content of the YAML file
-    """
-    with open(os.path.join(root, path_relative_to_root), "r") as stream:
-        data = yaml.safe_load(stream)
-    return data
-
+from utils.default_configs_path import data_repo, xlsx_config_path, missing_max_score_config_path, assessment_name_change_config_path
+from utils.utils import read_yaml_to_dict
 
 def get_max_score_df(
     root: str,
@@ -101,7 +66,7 @@ def get_max_score_from_df(
     instrument: str,
     max_score_df: pd.DataFrame,
     missing_max_score_config: dict,
-    trial: int = 0
+    trial: int = 0,
 ):
     if trial > 1:
         print(year, band, score_grp, desc)
@@ -110,7 +75,7 @@ def get_max_score_from_df(
 
     df = max_score_df
 
-    isperc = (instrument == "Percussion")
+    isperc = instrument == "Percussion"
 
     if isperc:
         df = df[df["Percussion"] == 1.0]
@@ -159,7 +124,7 @@ def get_max_score_from_df(
                 instrument,
                 max_score_df,
                 missing_max_score_config,
-                trial=trial + 1
+                trial=trial + 1,
             )
         except KeyError as ke:
             print(year, band, score_grp, desc, instrument)
@@ -188,7 +153,9 @@ def parse_summary_sheet(
         folder = os.path.join(root, data_repo, "cleaned", "assessment", "summary")
         os.makedirs(folder, exist_ok=True)
         print(os.path.join(folder, f"{year}_{band}_raw.csv"))
-        df.to_csv(os.path.join(folder, f"{year}_{band}_raw.csv"), index=False, header=True)
+        df.to_csv(
+            os.path.join(folder, f"{year}_{band}_raw.csv"), index=False, header=True
+        )
 
     return df
 
@@ -198,7 +165,7 @@ def column_name_update(
     df: pd.DataFrame,
     year: int,
     band: str,
-    name_change_config_path: str = name_change_config_path,
+    name_change_config_path: str = assessment_name_change_config_path,
 ):
     name_change_config = read_yaml_to_dict(root, name_change_config_path)
     column_name_changes = name_change_config["columns"].get(year, {}).get(band, None)
@@ -212,7 +179,7 @@ def instrument_name_update(
     df: pd.DataFrame,
     year: int,
     band: str,
-    name_change_config_path: str = name_change_config_path,
+    name_change_config_path: str = assessment_name_change_config_path,
 ):
     inst_name_change_config = read_yaml_to_dict(root, name_change_config_path)[
         "instrument"
@@ -229,7 +196,7 @@ def assessment_name_update(
     df: pd.DataFrame,
     year: int,
     band: str,
-    name_change_config_path: str = name_change_config_path,
+    name_change_config_path: str = assessment_name_change_config_path,
     drop_legacy: bool = True,
 ):
     name_change_config = read_yaml_to_dict(root, name_change_config_path)
@@ -275,14 +242,17 @@ def read_summary_csv(
     year: int,
     band: str,
     data_repo: str = data_repo,
-    name_change_config_path: str = name_change_config_path,
+    name_change_config_path: str = assessment_name_change_config_path,
     update_column_name: bool = True,
     update_assessment_name: bool = True,
     update_instrument_name: bool = True,
     drop_legacy: bool = True,
+    normalized: bool = False,
 ):
+
+    suffix = "normalized" if normalized else "raw"
     summarypath = os.path.join(root, data_repo, "cleaned", "assessment", "summary")
-    df = pd.read_csv(os.path.join(summarypath, f"{year}_{band}_raw.csv"))
+    df = pd.read_csv(os.path.join(summarypath, f"{year}_{band}_{suffix}.csv"))
 
     if update_column_name:
         df = column_name_update(root, df, year, band, name_change_config_path)
@@ -298,6 +268,26 @@ def read_summary_csv(
     return df
 
 
+def read_normalized_csv(
+    root: str,
+    year: int,
+    band: str,
+    data_repo: str = data_repo,
+):
+    return read_summary_csv(
+        root=root,
+        year=year,
+        band=band,
+        data_repo=data_repo,
+        name_change_config_path=assessment_name_change_config_path,
+        update_column_name=False,
+        update_assessment_name=False,
+        update_instrument_name=False,
+        drop_legacy=False,
+        normalized=True,
+    )
+
+
 def normalize_summary_csv(
     root: str,
     year: int,
@@ -308,7 +298,7 @@ def normalize_summary_csv(
     data_repo: str = data_repo,
     xlsx_config_path: str = xlsx_config_path,
     missing_max_score_config_path: str = missing_max_score_config_path,
-    name_change_config_path: str = name_change_config_path,
+    name_change_config_path: str = assessment_name_change_config_path,
     write_csv: Optional[str] = None,
 ):
 
@@ -390,7 +380,7 @@ def process(
     data_repo: str = data_repo,
     xlsx_config_path: str = xlsx_config_path,
     missing_max_score_config_path: str = missing_max_score_config_path,
-    name_change_config_path: str = name_change_config_path,
+    name_change_config_path: str = assessment_name_change_config_path,
 ):
     parse_summary_sheet(
         root=root,
@@ -431,7 +421,7 @@ def process_multiyear(
     data_repo: str = data_repo,
     xlsx_config_path: str = xlsx_config_path,
     missing_max_score_config_path: str = missing_max_score_config_path,
-    name_change_config_path: str = name_change_config_path,
+    name_change_config_path: str = assessment_name_change_config_path,
 ):
 
     years = range(first_year, last_year + 1)
