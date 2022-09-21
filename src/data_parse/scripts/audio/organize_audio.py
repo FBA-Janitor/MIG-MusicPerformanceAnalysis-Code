@@ -63,7 +63,7 @@ def process(
 
     files = sorted(glob.glob(os.path.join(root, audio_path, "**/*.mp3"), recursive=True))
 
-    audio_folder = os.path.join(root, data_repo, "cleaned", "audio", str(year), band)
+    audio_folder = os.path.join(root, data_repo, "cleaned", "audio", "bystudent", str(year), band)
     os.makedirs(audio_folder, exist_ok=True)
 
     symlink_path = os.path.join(audio_folder, "{sid}", "{sid}.mp3")
