@@ -1,0 +1,34 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      23 Sep 2022
+# Last Updated: 23 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+instrument:
+  bcl: Bb Clarinet 
+  tru: Trumpet
+  tsa: Tenor Saxophone 
+  flu: Flute 
+  axs: Alto Saxophone 
+  frh: French Horn 
+  obo: Oboe 
+  sna: snare drum 
+  xyl: xylophone 
+  tim: timpani
+
+segment:
+  lyricalEtude: Lyrical Etude
+  technicalEtude: Technical Etude
+  scalesChromatic: Chromatic Scale
+  scalesMajor: Major Scales
+  sightReading: Sight-Reading
+  malletEtude: Mallet Etude
+  snareEtude: Snare Etude
+  timpaniEtude: Timpani Etude
+  readingMallet: Reading-Mallet
+  readingSnare: Reading-Snare
+

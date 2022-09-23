@@ -1,0 +1,15 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      23 Sep 2022
+# Last Updated: 23 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+errata:
+  - Year: 2013
+    BandLevel: concert
+    StudentID: 29689
+    Description: Missing files, text content written into a the location of the "folder" turning the directory into a text file without extension
