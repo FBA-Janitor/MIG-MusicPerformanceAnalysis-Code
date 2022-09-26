@@ -58,9 +58,44 @@ If you would like to use these steps individually for any particular reason they
          - numberOfMusicalExercises: the number of musical exercises, defaults to 5 which is the historical number of exercises but if it changes in the future this will need to be changed for successful classifications.
          
  
-## Update 09/16/2022
-Code reviving ...
+# Update 09/26/2022
+Code revived!
 
+## Installation
 Run the command below to install the required packages
 
 ```conda create --name <name> --file requirements.txt```
+
+## Inference
+
+`annotate_new_data.py` does inference on new audio data using the trained model.
+
+Usage:
+
+```python annotate_new_data.py -i <input_audio_dir> -o <output_dir> -m <model_path>```
+- `input_audio_dir` is the directory containing `stu_id/stu_id.mp3` files
+- `output_dir` is the directory to write the report and the output
+- `model_path` is the path of trained svm model
+
+## Training
+
+`train_svm.py` trains a new svm model using the data.
+
+Usage:
+
+```python train_svm.py -i <input_training_audio_dir> -o <output_dir> -n <model_name> -gt <ground_truth_dir> --isAudio```
+- `input_training_audio_dir` is the directory containing `stu_id/stu_id.mp3` files used to train
+- `output_dir` is the directory to output the trained model
+- `model_name` is the name of model in the `output_dir`
+- `ground_truth_dir` is the directory containing `stu_id.txt` ground truth segmentation (can be ignored if using `.npz` feature and ground truth data)
+- disable `isAudio` if using the `.npz` files instead of raw audio.
+
+## Evaluation
+**Please don't do this. It is messy.** `evaluate.py` evaluates the trained svm model.
+
+Usage:
+
+```python evaluate.py -i <input_feature_dir> -o <output_dir> -m <model_path>```
+- `input_feature_dir` is the directory containing `stu_id.npz` files. Notice that the `.npz` file should contain both feature and groundtruth
+- `output_dir` is the directory to output the report (not working, don't know why)
+- `model_path` is the path of the svm model to test

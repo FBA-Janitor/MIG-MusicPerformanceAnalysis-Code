@@ -1,20 +1,22 @@
 import numpy as np
 from sklearn import svm
-from ProcessInput import*
-from Visuals import*
+from .ProcessInput import*
+from .Visuals import*
 import os
 import pickle
+from tqdm import tqdm
 
 #This function is used for creating new models from the files in the training directory
 
 def training(trainingDirectory, writeDirectory, modelFileName, isAudio=False, textAddress=""):
 
     if isAudio:
+        print("Extracting features from audio ...")
         writeFeatureData(trainingDirectory, textAddress, trainingDirectory, None, True, False)
 
         counter = 0
         gData = np.array([])
-        for entry in os.listdir(trainingDirectory):
+        for entry in tqdm(os.listdir(trainingDirectory)):
             if os.path.isfile(os.path.join(trainingDirectory, entry)) and entry[-4:] == '.npz':
 
                 featOrder, featArr, gTruth, truthWindows, blockTimes = fileOpen(trainingDirectory + '/' + entry)
@@ -25,14 +27,15 @@ def training(trainingDirectory, writeDirectory, modelFileName, isAudio=False, te
                     featureData = np.append(featureData, featArr, axis=0)
                 gData = np.append(gData, gTruth)
                 counter += 1
+        print("Training")
         clf = svm.SVC(kernel='linear')
         clf.fit(featureData, gData)
-
+        print("Training completed! Model saved at {}!".format(writeDirectory + "/" + modelFileName + ".sav"))
         pickle.dump(clf, open(writeDirectory + "/" + modelFileName + ".sav", 'wb'))
 
-        for entry in os.listdir(trainingDirectory):
-            if os.path.isfile(os.path.join(trainingDirectory, entry)) and entry[-4:] == '.npz':
-                os.remove(trainingDirectory + "/" + entry)
+        # for entry in os.listdir(trainingDirectory):
+        #     if os.path.isfile(os.path.join(trainingDirectory, entry)) and entry[-4:] == '.npz':
+        #         os.remove(trainingDirectory + "/" + entry)
 
     else:
         counter = 0

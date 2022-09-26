@@ -1,12 +1,13 @@
 import os
-import sys
 import warnings
-from librosa.core import load
-import numpy as np
-from Features import *
-import math
 from functools import reduce
-import time
+
+import numpy as np
+import librosa
+from librosa.core import load
+
+from .Features import *
+from tqdm import tqdm
 
 warnings.simplefilter("ignore", UserWarning)
 
@@ -24,7 +25,7 @@ def writeFeatureData(audioDirectory, textDirectory='', writeDirectory='', fileLi
     notFound = []
 
     if newData != True:
-        for entry in os.listdir(textDirectory):
+        for entry in tqdm(os.listdir(textDirectory)):
             if os.path.isfile(os.path.join(textDirectory, entry)) and entry[-4:] == '.txt':
                 fileNum = entry[:-4]
 
@@ -47,7 +48,7 @@ def writeFeatureData(audioDirectory, textDirectory='', writeDirectory='', fileLi
                 except ValueError:
                     print("error with: " + fileNum)
     else:
-        for entry in os.listdir(audioDirectory):
+        for entry in tqdm(os.listdir(audioDirectory)):
             if os.path.isdir(os.path.join(audioDirectory, entry)):
 
                 try:
@@ -61,7 +62,7 @@ def writeFeatureData(audioDirectory, textDirectory='', writeDirectory='', fileLi
                     files.append(fileNum)
 
                     path = os.fspath(audioDirectory + '/' + fileNum + '/' + fileNum + '.mp3')
-                    y, fs = load(path, mono=True)
+                    y, fs = librosa.load(path, mono=True)
                     tDirectory = textDirectory + '/' + entry
                     featureArr, blockTimes = processBlock(y, fs)
                     featureOrder = ['rms', 'specCrest', 'specCent', 'zcr', 'specRolloff', 'specFlux', 'mfccCoeff']
@@ -73,6 +74,7 @@ def writeFeatureData(audioDirectory, textDirectory='', writeDirectory='', fileLi
                     notFound.append(fileNum)
                     print(fileNum)
                 except:
+                    y, fs = load(path, mono=True)
                     print("Error with: " + entry)
 
     return files
@@ -112,6 +114,7 @@ def processBlock(y, fs, blockSize = 4096):
     featArrCongregate = np.zeros([featureRows * 2, numSecBlocks])
     blockTimes = np.arange(float(numSecBlocks))
     row = 0
+    
     for block in np.arange(numSecBlocks):
         row = 0
         startCol = block * blocksPerSec
@@ -140,12 +143,11 @@ def processGroundTruth(directory, blockTimes):
     t = open(directory, 'r')
     groundVec = np.zeros(len(blockTimes), dtype=int)
     truthWindows = []
-    for x in t:
-        num1 = float(x[0:x.index('\t1')])
-        x2 = x[x.index('\t1'):]
-        num2 = float(x2[x2.index('1')+len('\t1'):])+num1
+    t.readline()
+    for x in t.readlines():
+        num1, num2 = [float(num) for num in x.strip().split('\t')]
+        num2 += num1
         truthWindows.append([num1, num2])
-
     mask = []
     for i in truthWindows:
         mask = [i[0] <= blockTimes, i[1] >= blockTimes]
