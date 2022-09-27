@@ -70,7 +70,7 @@ Run the command below to install the required packages
 
 `annotate_new_data.py` does inference on new audio data using the trained model.
 
-![image](img/inference.png)
+<div style="text-align:center"><img src="./img/inference.png" alt="drawing" width="400"/></div>
 
 Usage:
 
@@ -83,7 +83,7 @@ Usage:
 
 `train_svm.py` trains a new svm model using the data.
 
-![image](img/training.png)
+<div style="text-align:center"><img src="./img/training.png" alt="drawing" width="240"/></div>
 
 Usage:
 
@@ -97,7 +97,8 @@ Usage:
 ## Evaluation
 **Please don't do this. It is still messy.** `evaluate.py` evaluates the trained svm model.
 
-![image](img/evaluation.png)
+<div style="text-align:center"><img src="./img/evaluation.png" alt="drawing" width="240"/></div>
+
 
 Usage:
 
