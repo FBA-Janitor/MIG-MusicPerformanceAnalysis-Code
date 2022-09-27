@@ -70,6 +70,8 @@ Run the command below to install the required packages
 
 `annotate_new_data.py` does inference on new audio data using the trained model.
 
+![image](img/inference.png)
+
 Usage:
 
 ```python annotate_new_data.py -i <input_audio_dir> -o <output_dir> -m <model_path>```
@@ -81,6 +83,8 @@ Usage:
 
 `train_svm.py` trains a new svm model using the data.
 
+![image](img/training.png)
+
 Usage:
 
 ```python train_svm.py -i <input_training_audio_dir> -o <output_dir> -n <model_name> -gt <ground_truth_dir> --isAudio```
@@ -91,7 +95,9 @@ Usage:
 - disable `isAudio` if using the `.npz` files instead of raw audio.
 
 ## Evaluation
-**Please don't do this. It is messy.** `evaluate.py` evaluates the trained svm model.
+**Please don't do this. It is still messy.** `evaluate.py` evaluates the trained svm model.
+
+![image](img/evaluation.png)
 
 Usage:
 
