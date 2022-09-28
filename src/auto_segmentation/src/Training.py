@@ -33,9 +33,9 @@ def training(trainingDirectory, writeDirectory, modelFileName, isAudio=False, te
         print("Training completed! Model saved at {}!".format(writeDirectory + "/" + modelFileName + ".sav"))
         pickle.dump(clf, open(writeDirectory + "/" + modelFileName + ".sav", 'wb'))
 
-        # for entry in os.listdir(trainingDirectory):
-        #     if os.path.isfile(os.path.join(trainingDirectory, entry)) and entry[-4:] == '.npz':
-        #         os.remove(trainingDirectory + "/" + entry)
+        for entry in os.listdir(trainingDirectory):
+            if os.path.isfile(os.path.join(trainingDirectory, entry)) and entry[-4:] == '.npz':
+                os.remove(trainingDirectory + "/" + entry)
 
     else:
         counter = 0

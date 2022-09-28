@@ -95,7 +95,7 @@ Usage:
 - disable `isAudio` if using the `.npz` files instead of raw audio.
 
 ## Evaluation
-**Please don't do this. It is still messy.** `evaluate.py` evaluates the trained svm model.
+`evaluate.py` evaluates the trained svm model. (I haven't yet understood the output.)
 
 <div style="text-align:center"><img src="./img/evaluation.png" alt="drawing" width="480"/></div>
 
