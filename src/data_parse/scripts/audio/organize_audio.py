@@ -118,8 +118,6 @@ def process_multiyear(
 
     yearbands = list(product(years, bands))
 
-    out = []
-
     for year, band in tqdm(yearbands):
         process(
             root,
