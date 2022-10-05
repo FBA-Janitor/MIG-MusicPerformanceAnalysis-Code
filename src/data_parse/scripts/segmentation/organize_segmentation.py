@@ -128,10 +128,17 @@ def clean_instrument(
         instrument = None
         insts_df = None
 
-    sdf_inst = summary_df[summary_df["Student"].astype(int) == int(sid)]["Instrument"].unique()
-    if len(sdf_inst) == 0:
-        # print(f"\n\n{sid} NOT FOUND!!!\n\n")
+    sdf_inst0 = summary_df[summary_df["Student"].astype(int) == int(sid)]
+    if len(sdf_inst0) == 0:
+        # print(int(sid) in summary_df["Student"].astype(int).unique().tolist())
+        # print(sid)
         return None, None
+    
+    sdf_inst = sdf_inst0["Instrument"].unique()
+    if len(sdf_inst) == 0:
+        # print(sdf_inst0)
+        return None, None
+    
         
     assert len(sdf_inst) == 1, (sid, sdf_inst)
     sdf_inst = sdf_inst[0]
@@ -187,7 +194,7 @@ def clean_segment(
         summary_df,
     )
     
-    if insts_df is None:
+    if insts_df is None and instrument is None:
         return None
 
     flag = {
@@ -202,7 +209,8 @@ def clean_segment(
     perc_segments = [s["ScoreGroup"] for s in segm_order["percussion"]]
     perc_insts = [s["Instrument"] for s in segm_order["percussion"]]
 
-    flag["Segment-Instrument Agreement"] = len(segments) != len(insts_df)
+    if insts_df is not None:
+        flag["Segment-Instrument Agreement"] = len(segments) != len(insts_df)
     flag["Segment Length"] = len(segments) != nseg
     flag["Instrument Length"] = len(insts_df) != nseg if insts_df is not None else False
 
@@ -305,7 +313,7 @@ def process(
             )
             
             if cleaned_segment is None:
-                not_found.append(sid)
+                not_found.append(int(sid))
                 continue
 
             outpath = os.path.join(
@@ -380,12 +388,40 @@ def process(
             )
 
             # print(pyin)
-        
+    
+    if len(not_found) == 0:
+        return    
     
     print(f"\n\n{len(not_found)}/{len(subfolders)} students not found in summary sheet.")
     
     has_audio = []
     no_audio = []
+    
+    for year in range(2013, 2018+1):
+        for band in ['concert', 'middle', 'symphonic']:
+            
+            summary_df = pd.read_csv(
+                os.path.join(
+                    root,
+                    data_repo,
+                    "cleaned",
+                    "assessment",
+                    "summary",
+                    f"{year}_{band}_normalized.csv",
+                )
+            )
+
+
+            student_list = [int(s) for s in summary_df['Student'].unique().tolist()]
+            common = set(student_list).intersection(not_found)
+            
+            if len(common) > 0:
+                print(len(common))
+                print(f"Checking for {year} {band}")
+                print(f"Number of students in summary sheet: {len(student_list)}")
+            
+            
+            # print(set(student_list).intersection(not_found))
     
     for nf in tqdm(not_found):
         audio_files = glob.glob(os.path.join(root, data_repo, f"cleaned/audio/bystudent/{year}/{band}", f"**/{sid}*.mp3"), recursive=True)
