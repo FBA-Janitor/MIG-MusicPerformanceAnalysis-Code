@@ -1,0 +1,32 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      23 Sep 2022
+# Last Updated: 23 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+winds:
+  - ScoreGroup: Lyrical Etude
+  - ScoreGroup: Technical Etude
+  - ScoreGroup: Chromatic Scale
+  - ScoreGroup: Major Scales
+  - ScoreGroup: Sight-Reading
+
+percussion:
+  - Instrument: Xylophone
+    ScoreGroup: Mallet Etude
+  - Instrument: Snare Drum
+    ScoreGroup: Snare Etude
+  - Instrument: Timpani
+    ScoreGroup: Timpani Etude
+  - Instrument: Xylophone
+    ScoreGroup: Chromatic Scale
+  - Instrument: Xylophone
+    ScoreGroup: Major Scales
+  - Instrument: Xylophone
+    ScoreGroup: Sight-Reading
+  - Instrument: Snare Drum
+    ScoreGroup: Sight-Reading

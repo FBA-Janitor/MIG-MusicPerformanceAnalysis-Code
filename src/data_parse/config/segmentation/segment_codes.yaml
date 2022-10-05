@@ -14,16 +14,21 @@ instrument:
   tsa: Tenor Saxophone 
   flu: Flute 
   axs: Alto Saxophone 
+  asx: Alto Saxophone
   frh: French Horn 
   obo: Oboe 
-  sna: snare drum 
-  xyl: xylophone 
-  tim: timpani
+  sna: Snare Drum 
+  xyl: Xylophone 
+  tim: Timpani
+
+percussion instruments: [Snare Drum, Xylophone, Timpani]
 
 segment:
   lyricalEtude: Lyrical Etude
   technicalEtude: Technical Etude
   scalesChromatic: Chromatic Scale
+  chromaticScale: Chromatic Scale
+  scale: Major Scales
   scalesMajor: Major Scales
   sightReading: Sight-Reading
   malletEtude: Mallet Etude
@@ -32,3 +37,8 @@ segment:
   readingMallet: Reading-Mallet
   readingSnare: Reading-Snare
 
+columns:
+  instrument name(str): Instrument
+  activity name(str): ScoreGroup
+  start_time(sec): Start
+  duration(sec): Duration

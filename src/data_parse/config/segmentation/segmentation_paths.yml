@@ -1,0 +1,36 @@
+##################################################
+# Author:       Karn Watcharasupat
+# Created:      23 Sep 2022
+# Last Updated: 23 Sep 2022
+#
+# Music Informatics Group
+# Center for Music Technology
+# Georgia Institute of Technology
+##################################################
+
+segmentation:
+  2013:
+    concert: "./MIG-FbaData/FBA2013/concertband/assessments"
+    middle: "./MIG-FbaData/FBA2013/middleschool/assessments"
+    symphonic: "./MIG-FbaData/FBA2013/symphonicband/assessments"
+  2014:
+    concert: "./MIG-FbaData/FBA2014/concertband/assessments"
+    middle: "./MIG-FbaData/FBA2014/middleschool/assessments"
+    symphonic: "./MIG-FbaData/FBA2014/symphonicband/assessments"
+  2015:
+    concert: "./MIG-FbaData/FBA2015/concertband/assessments"
+    middle: "./MIG-FbaData/FBA2015/middleschool/assessments"
+    symphonic: "./MIG-FbaData/FBA2015/symphonicband/assessments"
+  2016:
+    concert: "./MIG-FbaData/FBA2016/concertband/assessments"
+    middle: "./MIG-FbaData/FBA2016/middleschool/assessments"
+    symphonic: "./MIG-FbaData/FBA2017/symphonicband/assessments"
+  2017:
+    concert: "./MIG-FbaData/FBA2017/concertband/assessments"
+    middle: "./MIG-FbaData/FBA2017/middleschool/assessments"
+    symphonic: "./MIG-FbaData/FBA2017/symphonicband/assessments"
+  2018:
+    concert: "./MIG-FbaData/FBA2018/concertband/assessments"
+    middle: "./MIG-FbaData/FBA2018/middleschool/assessments"
+    symphonic: "./MIG-FbaData/FBA2018/symphonicband/assessments"
+  
