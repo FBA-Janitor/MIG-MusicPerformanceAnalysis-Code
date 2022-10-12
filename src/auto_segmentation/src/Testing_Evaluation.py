@@ -1,8 +1,8 @@
 import numpy as np
 from sklearn import svm
-from Classification_Annotation import*
-from ProcessInput import*
-from Visuals import*
+from .Classification_Annotation import*
+from .ProcessInput import*
+from .Visuals import*
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
@@ -13,7 +13,7 @@ import time
 import os
 import pickle
 
-def testing(testingDirectory, model, smoothing=True):
+def testing(testingDirectory, modelPath, txtAddress, smoothing=True):
 
     # Plotting and boolean instantiations
     num = 1
@@ -46,15 +46,15 @@ def testing(testingDirectory, model, smoothing=True):
     # Plot/Save Histograms
     plotPredHist = False
     savePredHist = False
-    savePredLoc = '/Users/matthewarnold/Desktop/AutoSeg Local/Plots/Histograms/Predictions/'
+    savePredLoc = '/home/yding402/fba-data/test_output'
 
     plotSegHist = False
     saveSegHist = False
-    saveSegLoc = '/Users/matthewarnold/Desktop/AutoSeg Local/Plots/Histograms/Segments/'
+    saveSegLoc = '/home/yding402/fba-data/test_output'
 
     plotStampHist = False
     saveStampHist = False
-    saveStampLoc = '/Users/matthewarnold/Desktop/AutoSeg Local/Plots/Histograms/Stamps/'
+    saveStampLoc = '/home/yding402/fba-data/test_output'
 
     # Print Confusion matrix values
     printConf = False
@@ -62,7 +62,7 @@ def testing(testingDirectory, model, smoothing=True):
     # Visualize predictions on gTruth
     viz = False
     saveViz = False
-    savePlots = '/Users/matthewarnold/Desktop/AutoSeg Local/Plots/VisualizePreds/RemoveSeg/'
+    savePlots = '/home/yding402/fba-data/test_output'
 
     # Plot f1 histogram
     f1Plot = False
@@ -85,8 +85,10 @@ def testing(testingDirectory, model, smoothing=True):
 
     # Writes text files
     outputTextFiles = True
-    txtAddress = "/Users/matthewarnold/Desktop/AutoSeg Local/TextOutput/2018_CB_BbClar"
-
+    txtAddress = txtAddress
+    
+    with open(modelPath, 'rb') as f:
+        model = pickle.load(f)
 
     # File iteration process
     for entry in os.listdir(testingDirectory):
@@ -249,12 +251,12 @@ def testing(testingDirectory, model, smoothing=True):
 
     # Print outputs
     with np.printoptions(precision=2, suppress=True):
-        print(goodCounter)
-        print(totalFileCount)
+        print("Good counter", goodCounter)
+        print("Total file", totalFileCount)
         if segmentsPrint:
             print(np.mean(segmentsArr))
         if resultsPrint:
-            print(finalMetrics)
+            print("Metrics", finalMetrics)
         if stampPrint:
             print("Mean distance:")
             print(stampMeanSeg)
@@ -320,7 +322,7 @@ def evalAcc(predictions, truth, stampWindows, blockTimes, ignoreBoundaries=False
         else:
             predStamps[int(x/2), 1] = blockTimes[predChange[x] + 1]
     # if negative, the prediction was early, if positive pred too late
-    diffMat = np.array(predStamps - stampWindows)
+    diffMat = np.array(predStamps - stampWindows[:5])
     diffMat = np.reshape(diffMat, (1, 10))
     diffMat = np.squeeze(diffMat, axis=0)
 
