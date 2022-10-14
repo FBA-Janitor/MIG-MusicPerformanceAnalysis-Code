@@ -1,13 +1,18 @@
+import os
+from tqdm import tqdm
 from itertools import product
 from typing import Optional
+
 import pandas as pd
 
-import os
-
-from tqdm import tqdm
-
-from utils.default_configs_path import data_repo, xlsx_config_path, missing_max_score_config_path, assessment_name_change_config_path
 from utils.utils import read_yaml_to_dict
+from utils.default_configs_path import (
+    data_repo,
+    xlsx_config_path,
+    missing_max_score_config_path,
+    assessment_name_change_config_path
+)
+
 
 def get_max_score_df(
     root: str,
@@ -66,7 +71,7 @@ def get_max_score_from_df(
     instrument: str,
     max_score_df: pd.DataFrame,
     missing_max_score_config: dict,
-    trial: int = 0,     # FIXME: 
+    trial: int = 0,     # FIXME: is this necessary?
 ):
     """
     Get a DataFrame containing maximum scores.
@@ -476,6 +481,7 @@ def normalize_summary_csv(
         path to configuration file with name change in assessment, by default assessment_name_change_config_path,
     write_csv: Optional[str], optional  # FIXME: the variable type is confusing here, this should be a boolean variable
         path to write the normalized csv, by default {year}_{band}_normalized.csv
+    
     Returns
     -------
     None
@@ -563,7 +569,7 @@ def process(
     name_change_config_path: str = assessment_name_change_config_path,
 ):
     """
-    TODO: add documentation
+    Organize the assessment scores of a certain year and a certain group
 
     Parameters
     ----------
@@ -580,9 +586,9 @@ def process(
     drop_legacy: bool, optional
         whether to include the assessment change with reason Legacy, by default True
     write_summary_csv : bool, optional
-        whether to write the content to a csv copy, by default True
+        whether to write the summary to a csv copy, by default True
     write_normalized_csv: bool, optional
-        whether to write the content to a csv copy, by default True
+        whether to write the normalized scores to a csv copy, by default True
     data_repo : str, optional
         relative path to the repository housing cleaned data, by default data_repo
     xlsx_config_path : str, optional
@@ -591,6 +597,7 @@ def process(
         path to configuration file with name change in max score, by default missing_max_score_config_path,
     name_change_config_path: str, optional
         path to configuration file with name change in assessment, by default assessment_name_change_config_path,
+    
     Returns
     -------
     None
@@ -637,7 +644,7 @@ def process_multiyear(
     name_change_config_path: str = assessment_name_change_config_path,
 ):
     """
-    TODO: add documentation
+    Organize the assessment scores of several years and several groups
 
     Parameters
     ----------
@@ -671,6 +678,7 @@ def process_multiyear(
         path to configuration file with name change in max score, by default missing_max_score_config_path,
     name_change_config_path: str, optional
         path to configuration file with name change in assessment, by default assessment_name_change_config_path,
+    
     Returns
     -------
     None
