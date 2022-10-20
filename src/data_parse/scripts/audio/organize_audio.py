@@ -1,27 +1,37 @@
-from curses.ascii import isblank
-from itertools import product
-import json
 import os
-from pprint import pprint
-from typing import OrderedDict
-import pandas as pd
+import glob
+import re
+from tqdm import tqdm
+from itertools import product
 
-from assessments_scores.organize_assessment import read_normalized_csv
+from utils.utils import read_yaml_to_dict
 
 from utils.default_configs_path import (
     audio_config_path,
     data_repo,
     audio_name_change_config_path,
 )
-from utils.utils import read_yaml_to_dict
 
 import glob
 import re
 
-from tqdm import tqdm
-
-
 def filename_to_id_check(filename):
+    """
+    Convert the filename to student id
+
+    Parameters
+    ----------
+    filename: str
+        path to an audio file
+    
+    Returns
+    -------
+    int
+        student id
+    boolen
+        whether the filename is valid
+    """
+
     _, basename = os.path.split(filename)
 
     out = re.match(r"(\d{5})(.*)?\.mp3", basename)
@@ -40,6 +50,29 @@ def get_task_list(
     audio_config_path=audio_config_path,
     name_change_config_path=audio_name_change_config_path,
 ):
+    """
+    Organize (create symbolic links) for the audio files of a certain year and a certain group
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    audio_config_path : str, optional
+        path to configuration file with locations of the audio files, by default audio_config_path
+    name_change_config_path: str, optional
+        path to configuration file with name change in audio, by default audio_file_name_change_config_path,
+    
+    Returns
+    -------
+    None
+    """
+
     name_change_config = read_yaml_to_dict(root, name_change_config_path)["filenames"]
 
     name_change_config = [
@@ -117,7 +150,7 @@ def process(
 
         audio_path = symlink_path.format(sid=sid)
 
-        if os.path.exists(audio_path):
+        if os.path.exists(audio_path) or os.path.islink(audio_path):
             os.remove(audio_path)
 
         os.symlink(file, audio_path)
@@ -134,6 +167,34 @@ def process_multiyear(
     audio_config_path=audio_config_path,
     name_change_config_path=audio_name_change_config_path,
 ):
+    """
+    Organize the audio files of several years and several groups
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    first_year : int, optional
+        first year of data to clean (included), by default 2013
+    last_year : int
+        last year of data to clean (included), by default 2018
+    middle: bool, optional
+        whether to process the middle group, by default True
+    concert: bool, optional
+        whether to process the concert group, by default True
+    symphonic: bool, optional
+        whether to process the symphonic group, by default True
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    audio_config_path : str, optional
+        path to configuration file with locations of the audio files, by default audio_config_path
+    name_change_config_path: str, optional
+        path to configuration file with name change in audio, by default audio_file_name_change_config_path,
+    
+    Returns
+    -------
+    None
+    """
 
     years = range(first_year, last_year + 1)
     bands = []

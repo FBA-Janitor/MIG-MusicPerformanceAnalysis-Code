@@ -1,16 +1,10 @@
-import numpy as np
-from sklearn import svm
-from ProcessInput import*
-from Visuals import*
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import plot_confusion_matrix
-import matplotlib.pyplot as plt
-import math
-import time
 import os
+import math
 import pickle
+
+import numpy as np
+from .ProcessInput import *
+from .Visuals import *
 
 def classifyFeatureData(directory, writeAddress, modelPath, generateDataReport=False, keepNPZFiles=True,
                                numberOfMusicalExercises=5):
@@ -31,7 +25,6 @@ def classifyFeatureData(directory, writeAddress, modelPath, generateDataReport=F
 
     for entry in os.listdir(directory):
         if os.path.isfile(os.path.join(directory, entry)) and entry[-4:] == '.npz':
-
             try:
                 featOrder, featArr, _, _, blockTimes = fileOpen(directory + '/' + entry)
                 rawClassification = model.predict(featArr)
@@ -139,7 +132,11 @@ def postProc(predictions, smoothing=False, remNonMus=False, remMus=False, segCou
         # Fixes 0 1 0
         m3 = np.where(predDiff == 1)[0]
         if np.sum(m3 >= len(predDiff) - 2) > 0:
-            m3 = m3[:-np.sum(m3 >= len(predDiff) - 1)]
+            if predDiff[-2] == 1 and predDiff[-1] == -1:
+                predFixed[-2] = 0.
+            if predDiff[-1] == 1:
+                predFixed[-1] = 0.
+            m3 = m3[:-1]
         m4 = m3[np.where(predDiff[m3 + 1] == -1)[0]] + 1
         predFixed[m4] = 0.0
 
@@ -149,7 +146,11 @@ def postProc(predictions, smoothing=False, remNonMus=False, remMus=False, segCou
         # Fixes 1 0 1
         m1 = np.where(predDiff == -1)[0]
         if np.sum(m1 >= len(predDiff) - 2) > 0:
-            m1 = m1[:-np.sum(m1 >= len(predDiff) - 1)]
+            if predDiff[-2] == -1 and predDiff[-1] == 1:
+                predFixed[-2] = 1.
+            if predDiff[-1] == -1:
+                predFixed[-1] = 1.
+            m1 = m1[:-1]
         m2 = m1[np.where(predDiff[m1 + 1] == 1)[0]] + 1
         predFixed[m2] = 1.0
 
@@ -414,3 +415,13 @@ def newDataReport(flaggedFileList, writeAddress, correctSegFileCount, firstPassF
 
     reportFile.write(writeStr[:-1])
     reportFile.close()
+
+if __name__ == '__main__':
+    feature_dir = "/home/yding402/fba-data/test_old_feature"
+    model_path = "/home/yding402/fba-data/MIG-MusicPerformanceAnalysis-Code/src/auto_segmentation/Models/2017ABAI.sav"
+    output = classifyFeatureData(
+        directory=feature_dir,
+        writeAddress=0,
+        modelPath=model_path
+    )
+    print(output)

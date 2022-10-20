@@ -1,8 +1,13 @@
 import glob
-from itertools import product
-import re
-import pandas as pd
 import os
+import re
+from io import StringIO
+from itertools import product
+from tqdm import tqdm
+
+import numpy as np
+import pandas as pd
+from scipy import optimize
 
 from utils.utils import read_yaml_to_dict
 from utils.default_configs_path import (
@@ -13,16 +18,22 @@ from utils.default_configs_path import (
     pyin_repo,
 )
 
-from io import StringIO
 
-from tqdm import tqdm
+def read_txt_to_df(txt_path, header="// data format: "):
+    """
+    Read the segmentation or instrument txt file into a DataFrame
 
-import numpy as np
-
-from scipy import optimize
-
-
-def read_txt_to_df(txt_path, header="// data format: ", columns=[]):
+    Parameters
+    ----------
+    txt_path : str
+        path to the txt file
+    header : str
+        format of the header prefix
+    
+    Returns
+    -------
+    pd.DataFrame
+    """
 
     with open(txt_path, "r") as f:
         content = f.read()
@@ -99,6 +110,35 @@ def clean_instrument(
     perc_inst,
     summary_df,
 ):
+    """
+    Organize the instrument files of a certain year and a certain group
+
+    Parameters
+    ----------
+    thefolder : str
+        subfolder containing the segment files
+    sid : int
+        student id
+    col_rename : dict
+        column name changes
+    has_instrument : bool
+        whether the subfolder contains the instrument labels
+    inst_codes : dict
+        instrument code to names
+    segm_codes : dict
+        segmentation code to names
+    perc_inst : List[str]
+        list of percussion instruments
+    summary_df : pd.DataFrame
+        summary DataFrame
+    Returns
+    -------
+    Optional[pd.DataFrame]
+        DataFrame with instrument labels
+    Optional[str]
+        Instrument 
+    """
+    
     if has_instrument:
         insts_df = read_txt_to_df(
             os.path.join(thefolder, f"{sid}_instrument.txt")
@@ -164,6 +204,39 @@ def clean_segment(
     remove_short_segment=True,
     short_segment_threshold=1.0,
 ):
+    """
+    Process a single segment file
+
+    Parameters
+    ----------
+    thefolder : str
+        subfolder containing the segment files
+    sid : int
+        student id
+    col_rename : dict
+        column name changes
+    has_instrument : bool
+        whether the subfolder contains the instrument labels
+    inst_codes : dict
+        instrument code to names
+    segm_codes : dict
+        segmentation code to names
+    perc_inst : List[str]
+        list of percussion instruments
+    segm_order : List[dict]
+        order of the segmentations in the audio
+    summary_df : pd.DataFrame
+        summary DataFrame
+    remove_short_segment : bool
+        whether to remove the short segments, by default True
+    short_segment_threshold : float
+        the threshold of short segment to remove, by default 1.0
+    
+    Returns
+    -------
+    Optional[dict]
+    """
+
     segments = read_txt_to_df(os.path.join(thefolder, f"{sid}_segment.txt"))
     
     segments.columns = [c.strip() for c in segments.columns]
@@ -257,6 +330,32 @@ def process(
     segmentation_code_config_path=segmentation_code_config_path,
     segmentation_order_config_path=segmentation_order_config_path,
 ):
+    """
+    Organize the segmentation files of a certain year and a certain group
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    pyin_repo : str, optional
+        relative path to the repository housing cleaned pitch tracking data, by default pyin_repo
+    segmentation_config_path : str, optional
+        path to configuration file with locations of the segmentation files, by default segmentation_config_path
+    segmentation_code_config_path: str, optional
+        path to configuration file with the meanings of segmentation codes, by default segmentation_code_config_path
+    segmentation_order_config_path: str, optional
+        path to configuration with the order of segmentations, by default segmentation_order_config_path
+    
+    Returns
+    -------
+    None
+    """
 
     summary_df = pd.read_csv(
         os.path.join(
@@ -293,6 +392,7 @@ def process(
     for sid in tqdm(subfolders):
         assert re.match(r"^\d{5}$", sid) is not None
 
+        # thefolder is the path of subfolder
         thefolder = os.path.join(root, segmentation_path, sid)
         contents = os.listdir(thefolder)
 
@@ -330,7 +430,7 @@ def process(
 
             segm_path = os.path.join(outpath, f"{sid}_segment.txt")
 
-            if os.path.exists(segm_path):
+            if os.path.exists(segm_path) or os.path.islink(segm_path):
                 os.remove(segm_path)
 
             os.symlink(
@@ -341,7 +441,7 @@ def process(
             if has_instrument:
                 inst_path = os.path.join(outpath, f"{sid}_instrument.txt")
 
-                if os.path.exists(inst_path):
+                if os.path.exists(inst_path) or os.path.islink(segm_path):
                     os.remove(inst_path)
 
                 os.symlink(
@@ -379,7 +479,7 @@ def process(
 
             pyin_path = os.path.join(outpath, f"{sid}_pyin_pitchtrack.txt")
 
-            if os.path.exists(pyin_path):
+            if os.path.exists(pyin_path) or os.path.islink(pyin_path):
                 os.remove(pyin_path)
 
             os.symlink(
@@ -454,6 +554,38 @@ def process_multiyear(
     segmentation_code_config_path=segmentation_code_config_path,
     segmentation_order_config_path=segmentation_order_config_path,
 ):
+    """
+    Organize the audio files of several years and several groups
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    first_year : int, optional
+        first year of data to clean (included), by default 2013
+    last_year : int
+        last year of data to clean (included), by default 2018
+    middle: bool, optional
+        whether to process the middle group, by default True
+    concert: bool, optional
+        whether to process the concert group, by default True
+    symphonic: bool, optional
+        whether to process the symphonic group, by default True
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    pyin_repo : str, optional
+        relative path to the repository housing cleaned pitch tracking data, by default pyin_repo
+    segmentation_config_path : str, optional
+        path to configuration file with locations of the segmentation files, by default segmentation_config_path
+    segmentation_code_config_path: str, optional
+        path to configuration file with the meanings of segmentation codes, by default segmentation_code_config_path
+    segmentation_order_config_path: str, optional
+        path to configuration with the order of segmentations, by default segmentation_order_config_path
+    
+    Returns
+    -------
+    None
+    """
 
     years = range(first_year, last_year + 1)
     bands = []

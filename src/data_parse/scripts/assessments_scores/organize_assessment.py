@@ -1,13 +1,18 @@
+import os
+from tqdm import tqdm
 from itertools import product
 from typing import Optional
+
 import pandas as pd
 
-import os
-
-from tqdm import tqdm
-
-from utils.default_configs_path import data_repo, xlsx_config_path, missing_max_score_config_path, assessment_name_change_config_path
 from utils.utils import read_yaml_to_dict
+from utils.default_configs_path import (
+    data_repo,
+    xlsx_config_path,
+    missing_max_score_config_path,
+    assessment_name_change_config_path
+)
+
 
 def get_max_score_df(
     root: str,
@@ -66,8 +71,32 @@ def get_max_score_from_df(
     instrument: str,
     max_score_df: pd.DataFrame,
     missing_max_score_config: dict,
-    trial: int = 0,
+    trial: int = 0,     # FIXME: is this necessary?
 ):
+    """
+    Get a DataFrame containing maximum scores.
+
+    Parameters
+    ----------
+    year : int
+        year of the data
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    score_grp: str
+        name of score group
+    desc: str
+        description
+    instrument: str
+        instrument
+    max_score_df: pd.DataFrame
+        DataFrame with the maximum scores
+    missing_max_score_config
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with the maximum scores
+    """
+
     if trial > 1:
         print(year, band, score_grp, desc)
         print(f"Trial: {trial}")
@@ -141,6 +170,29 @@ def parse_summary_sheet(
     xlsx_config_path: str = xlsx_config_path,
     write_csv: bool = False,
 ):
+    """
+    Read xlsx file of raw assessment scores
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    year : int
+        year of the data to be read
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    xlsx_config_path : str, optional
+        path to configuration file with locations of the excel assessment files, by default xlsx_config_path
+    write_csv: bool, optional
+        whether to write the content to a csv copy, by default False
+    
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with raw assessment scores
+    """
 
     xlsx_config = read_yaml_to_dict(root, xlsx_config_path)
 
@@ -152,7 +204,7 @@ def parse_summary_sheet(
     if write_csv:
         folder = os.path.join(root, data_repo, "cleaned", "assessment", "summary")
         os.makedirs(folder, exist_ok=True)
-        print(os.path.join(folder, f"{year}_{band}_raw.csv"))
+        print("Writing raw csv:", os.path.join(folder, f"{year}_{band}_raw.csv"))
         df.to_csv(
             os.path.join(folder, f"{year}_{band}_raw.csv"), index=False, header=True
         )
@@ -167,6 +219,28 @@ def column_name_update(
     band: str,
     name_change_config_path: str = assessment_name_change_config_path,
 ):
+    """
+    Update the column name of the score DataFrame
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    df : pd.DataFrame
+        DataFrame of the scores
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    name_change_config_path: str, optional
+        path to configuration file with name change in assessment, by default assessment_name_change_config_path
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with column name updated
+    """
+
     name_change_config = read_yaml_to_dict(root, name_change_config_path)
     column_name_changes = name_change_config["columns"].get(year, {}).get(band, None)
     if column_name_changes:
@@ -181,6 +255,28 @@ def instrument_name_update(
     band: str,
     name_change_config_path: str = assessment_name_change_config_path,
 ):
+    """
+    Update the instrument name of the score DataFrame
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    df : pd.DataFrame
+        DataFrame of the scores
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    name_change_config_path: str, optional
+        path to configuration file with name change in assessment, by default assessment_name_change_config_path
+    
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with column name updated
+    """
+
     inst_name_change_config = read_yaml_to_dict(root, name_change_config_path)[
         "instrument"
     ]
@@ -199,6 +295,29 @@ def assessment_name_update(
     name_change_config_path: str = assessment_name_change_config_path,
     drop_legacy: bool = True,
 ):
+    """
+    Update the assessment name of the score DataFrame
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    df : pd.DataFrame
+        DataFrame of the scores
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    name_change_config_path: str, optional
+        path to configuration file with name change in assessment, by default assessment_name_change_config_path
+    drop_legacy: bool, optional
+        whether to include the assessment change with reason Legacy, by default True
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with assessment name updated
+    """
+
     name_change_config = read_yaml_to_dict(root, name_change_config_path)
     assessment_name_changes = name_change_config["assessments"]
 
@@ -249,7 +368,37 @@ def read_summary_csv(
     drop_legacy: bool = True,
     normalized: bool = False,
 ):
+    """
+    Read in the summary csv file
 
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    name_change_config_path: str, optional
+        path to configuration file with name change in assessment, by default assessment_name_change_config_path,
+    update_column_name: bool, optional
+        whether to update wrong column names with correct ones in the DataFrame, by default True 
+    update_assessment_name: bool, optional
+        whether to update wrong assessment names with correct ones in the DataFrame, by default True
+    update_instrument_name : bool, optional
+        whether to update wrong instrument names with correct ones in the DataFrame, by default True
+    drop_legacy: bool, optional
+        whether to include the assessment change with reason Legacy, by default True
+    normalized : bool, optional
+        whether read the normalized score (instead of raw score), by default False
+    Returns
+    -------
+    pd.DataFrame
+        the score DataFrame
+    """
+    
     suffix = "normalized" if normalized else "raw"
     summarypath = os.path.join(root, data_repo, "cleaned", "assessment", "summary")
     df = pd.read_csv(os.path.join(summarypath, f"{year}_{band}_{suffix}.csv"))
@@ -301,6 +450,42 @@ def normalize_summary_csv(
     name_change_config_path: str = assessment_name_change_config_path,
     write_csv: Optional[str] = None,
 ):
+    """
+    Read in normalized summary csv file
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    update_assessment_name: bool, optional
+        whether to update wrong assessment names with correct ones in the DataFrame, by default True
+    update_instrument_name : bool, optional
+        whether to update wrong instrument names with correct ones in the DataFrame, by default True
+    drop_legacy: bool, optional
+        whether to include the assessment change with reason Legacy, by default True
+    write_summary_csv : bool, optional
+        whether to write the content to a csv copy, by default True
+    write_normalized_csv: bool, optional
+        whether to write the content to a csv copy, by default True
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    xlsx_config_path : str, optional
+        path to configuration file with locations of the excel assessment files, by default xlsx_config_path
+    missing_max_score_config_path: str, optional
+        path to configuration file with name change in max score, by default missing_max_score_config_path,
+    name_change_config_path: str, optional
+        path to configuration file with name change in assessment, by default assessment_name_change_config_path,
+    write_csv: Optional[str], optional  # FIXME: the variable type is confusing here, this should be a boolean variable
+        path to write the normalized csv, by default {year}_{band}_normalized.csv
+    
+    Returns
+    -------
+    None
+    """
 
     df = read_summary_csv(
         root,
@@ -312,6 +497,7 @@ def normalize_summary_csv(
         update_assessment_name=False,
         update_instrument_name=False,
         drop_legacy=False,
+        normalized=False
     )
 
     max_score_df = get_max_score_df(
@@ -351,7 +537,7 @@ def normalize_summary_csv(
     if write_csv == False:
         return df
 
-    if write_csv is not None:
+    if write_csv is not None:   # FIXME: write_csv should be a boolean variable
         if write_csv == True:
             write_csv = os.path.join(
                 root,
@@ -382,6 +568,40 @@ def process(
     missing_max_score_config_path: str = missing_max_score_config_path,
     name_change_config_path: str = assessment_name_change_config_path,
 ):
+    """
+    Organize the assessment scores of a certain year and a certain group
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    year : int
+        data of which year to be processed
+    band : str
+        group of the band, 'middle', 'concert' or 'symphonic'
+    update_assessment_name: bool, optional
+        whether to update wrong assessment names with correct ones in the DataFrame, by default True
+    update_instrument_name : bool, optional
+        whether to update wrong instrument names with correct ones in the DataFrame, by default True
+    drop_legacy: bool, optional
+        whether to include the assessment change with reason Legacy, by default True
+    write_summary_csv : bool, optional
+        whether to write the summary to a csv copy, by default True
+    write_normalized_csv: bool, optional
+        whether to write the normalized scores to a csv copy, by default True
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    xlsx_config_path : str, optional
+        path to configuration file with locations of the excel assessment files, by default xlsx_config_path
+    missing_max_score_config_path: str, optional
+        path to configuration file with name change in max score, by default missing_max_score_config_path,
+    name_change_config_path: str, optional
+        path to configuration file with name change in assessment, by default assessment_name_change_config_path,
+    
+    Returns
+    -------
+    None
+    """
     parse_summary_sheet(
         root=root,
         year=year,
@@ -423,6 +643,46 @@ def process_multiyear(
     missing_max_score_config_path: str = missing_max_score_config_path,
     name_change_config_path: str = assessment_name_change_config_path,
 ):
+    """
+    Organize the assessment scores of several years and several groups
+
+    Parameters
+    ----------
+    root : str
+        root directory of the FBA project
+    first_year : int, optional
+        first year of data to clean (included), by default 2013
+    last_year : int
+        last year of data to clean (included), by default 2018
+    middle: bool, optional
+        whether to process the middle group, by default True
+    concert: bool, optional
+        whether to process the concert group, by default True
+    symphonic: bool, optional
+        whether to process the symphonic group, by default True
+    update_assessment_name: bool, optional
+        whether to update wrong assessment names with correct ones in the DataFrame, by default True
+    update_instrument_name : bool, optional
+        whether to update wrong instrument names with correct ones in the DataFrame, by default True
+    drop_legacy: bool, optional
+        whether to include the assessment change with reason Legacy, by default True
+    write_summary_csv : bool, optional
+        whether to write the content to a csv copy, by default True
+    write_normalized_csv: bool, optional
+        whether to write the content to a csv copy, by default True
+    data_repo : str, optional
+        relative path to the repository housing cleaned data, by default data_repo
+    xlsx_config_path : str, optional
+        path to configuration file with locations of the excel assessment files, by default xlsx_config_path
+    missing_max_score_config_path: str, optional
+        path to configuration file with name change in max score, by default missing_max_score_config_path,
+    name_change_config_path: str, optional
+        path to configuration file with name change in assessment, by default assessment_name_change_config_path,
+    
+    Returns
+    -------
+    None
+    """
 
     years = range(first_year, last_year + 1)
     bands = []
