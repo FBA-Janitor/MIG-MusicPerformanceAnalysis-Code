@@ -124,6 +124,7 @@ def process(
     root,
     year,
     band,
+    data_repo=data_repo,
     audio_config_path=audio_config_path,
     name_change_config_path=audio_name_change_config_path,
 ):
@@ -132,7 +133,6 @@ def process(
         root=root,
         year=year,
         band=band,
-        data_repo=data_repo,
         audio_config_path=audio_config_path,
         name_change_config_path=name_change_config_path,
     )

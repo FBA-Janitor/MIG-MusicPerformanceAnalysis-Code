@@ -1,7 +1,7 @@
 import glob
 from itertools import product
+from operator import sub
 import re
-from tkinter import Y
 import pandas as pd
 import os
 
@@ -15,9 +15,12 @@ from tqdm import tqdm
 import numpy as np
 
 from audio import organize_audio
+from assessments_scores import organize_assessment
 
 
-def process_audio(root, year, band, config_paths=default_configs_path, filelist: list=[]):
+def process_audio(
+    root, year, band, config_paths=default_configs_path, filelist: list = []
+):
     task_list = organize_audio.get_task_list(
         root=root,
         year=year,
@@ -35,12 +38,44 @@ def process_audio(root, year, band, config_paths=default_configs_path, filelist:
     return filelist
 
 
-def process_scores(*args, **kwargs):
-    pass
+def process_scores(
+    root, year, band, config_paths=default_configs_path, filelist: list = []
+):
+
+    df = organize_assessment.read_normalized_csv(
+        root, year, band, data_repo=config_paths.data_repo
+    )
+
+    # print(df)
+
+    filelist += [
+        {"sid": sid, "score_year": year, "score_band": band}
+        for sid in df["Student"].unique()
+    ]
+
+    return filelist
 
 
-def process_segmentation(*args, **kwargs):
-    pass
+def process_segmentation(root, year, band, config_paths=default_configs_path, filelist=[]):
+
+    segmentation_path = read_yaml_to_dict(root, config_paths.segmentation_config_path)[
+        "segmentation"
+    ][year][band]
+
+    subfolders = [
+        f
+        for f in os.listdir(os.path.join(root, segmentation_path))
+        if os.path.isdir(os.path.join(root, segmentation_path, f))
+    ]
+    
+    for sid in subfolders:
+        assert re.match(r"^\d{5}$", sid) is not None
+    
+    filelist += [
+        {"sid": f, "segmentation_year": year, "segmentation_band": band} for f in subfolders
+    ]
+    
+    return filelist
 
 
 def process_multiyear(
@@ -87,9 +122,11 @@ def process_multiyear(
             )
 
         pd.DataFrame(filelist).to_csv(
-            os.path.join(root, config_paths.tally_path, f"{name}.csv")
+            os.path.join(root, config_paths.tally_path, f"{name}.csv"), index=False
         )
+
 
 if __name__ == "__main__":
     import fire
+
     fire.Fire()

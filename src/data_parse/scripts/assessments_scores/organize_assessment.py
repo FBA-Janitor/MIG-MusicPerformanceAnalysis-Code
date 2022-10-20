@@ -71,7 +71,7 @@ def get_max_score_from_df(
     instrument: str,
     max_score_df: pd.DataFrame,
     missing_max_score_config: dict,
-    trial: int = 0,     # FIXME: is this necessary?
+    trial: int = 0,     # FIXME: is this necessary? / Not really, but it's a failsafe.
 ):
     """
     Get a DataFrame containing maximum scores.
