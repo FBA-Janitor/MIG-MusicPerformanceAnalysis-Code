@@ -1,7 +1,8 @@
 import numpy as np
 
+SMOOTH_LABEL = 'old'           # slower using old code
 
-def smooth_label(pred, SMOOTH_LABEL):
+def smooth_label(pred):
     """
     Smooth the prediction label to remove short segments of performance or silence
     FIXME: use a graceful way to smooth and debug ISSUE#7
@@ -45,7 +46,8 @@ def pred2seg(pred, time_stamp):
         seg: (num_seg, 2), start time and duration of each segments
     """
     # TODO: check how the time_stamp match
-    begin_diff = np.diff(pred, prepend=0)
+    begin_diff = np.diff(pred, append=0)
+    # begin_diff = np.diff(pred, prepend=0)
     begin_time = time_stamp[begin_diff == 1]
     end_diff = np.diff(pred)
     end_time = time_stamp[1:][end_diff == -1]

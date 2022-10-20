@@ -2,8 +2,9 @@ import glob
 import os
 import pickle
 import re
-import warnings
+from typing import Optional
 from tqdm import tqdm
+import warnings
 
 import librosa
 import sklearn
@@ -16,115 +17,19 @@ from utils.post_process import (
     pred2seg
 )
 from utils.default_configs_path import (
-    xlsx_config_path,
     model_path,
-    data_repo,
     feature_write_dir,
 )
 from utils.feature import *
 from utils.utils import write_txt
 
 warnings.filterwarnings("ignore")
-SPECTROGRAM_CALCULATE = 'old'  # scipy for old, librosa for new
-FEATURE_EXTRACTION = 'old'     # manually calculate the feature for old
-FEAUTRE_GROUPING = 'old'       # bug in old code
-SMOOTH_LABEL = 'old'           # slower using old code
-
-def write_feature(
-    audio,
-    stu_id,
-    feature_dir,
-    sr=22050,
-    block_size=4096,
-    hop_size=2048
-):
-    """
-    Segment the audio file or feature file in a directory
-
-    Parameters
-    ----------
-    audio : np.ndarray
-        audio file
-    stu_id : str
-        student id (file name)
-    feature_dir : str
-        directory to write the feature
-    sr : int, optional
-        sampling rate used to extract the feature, by default 22050
-    block_size : int, optional
-        block size used to extract the feature, by default 4096
-    hop_size : int, optional
-        hop size used to extract the feature, by default 2048
-
-    Returns
-    ----------
-    None
-    """
-    # Compute the spectrogram (freq, time)
-    # TODO: don't use scipy, use librosa instead
-    if SPECTROGRAM_CALCULATE == 'old':
-        hops = np.arange(0, len(audio) -1, hop_size)
-        hops += block_size
-        big = max(hops[hops < len(audio) - 1])
-        num_iterations = int((big - block_size) / hop_size) + 1
-        _, _, spec = scipy.signal.spectrogram(audio, nperseg=block_size, noverlap=hop_size, mode='magnitude')
-    else:
-        raise NotImplementedError("New spectrogram cacluation not implemented yet!")
-    
-    # Extract the feature
-    # TODO: Extract the feature with packages, and fix the zero
-    if FEATURE_EXTRACTION == 'old':
-        feature = np.vstack([
-            FeatureTimeRms(audio, block_size, hop_size, sr)[:num_iterations],
-            FeatureSpectralCrestFactor(spec, sr)[:num_iterations],
-            FeatureSpectralCentroid(spec, sr)[:num_iterations],
-            FeatureTimeZeroCrossingRate(audio, block_size, hop_size, sr)[:num_iterations],
-            FeatureSpectralRolloff(spec, sr)[:num_iterations],
-            FeatureSpectralFlux(spec, sr)[:num_iterations],
-            FeatureSpectralMfccs(spec, sr)[:, :num_iterations],
-            np.zeros(num_iterations, dtype=np.float32)
-        ])
-    else:
-        raise NotImplementedError("New feature extraction not implemented yet!")
-
-    # Arrange the features in larger blocks
-    # where each large block contains the 
-    # mean and std of the small frames,
-    # and the larger blocks ~ 1s
-    # The output will be like
-    # (num_seconds, num_feature * 2)
-    num_frame_combine = int(sr / hop_size) - 1
-    f_bin, t_bin = feature.shape
-    time_block = ((np.arange(t_bin)) * hop_size / sr) + block_size / sr
-    time_block = time_block[
-        0:
-        t_bin // num_frame_combine * num_frame_combine:
-        num_frame_combine]
-    
-    # FIXME: big bug here!!
-    if FEAUTRE_GROUPING == 'old':
-        # This is a graceful reimplementation of the bug
-        feature = feature[::2]
-        feature = feature[:, :num_frame_combine * (t_bin // num_frame_combine)].reshape(
-            (f_bin + 1) // 2, t_bin // num_frame_combine, num_frame_combine)
-        feature = np.concatenate([feature.mean(axis=-1), feature.std(axis=-1)], axis=1).reshape(
-            (f_bin + 1) // 2 * 2, t_bin // num_frame_combine)
-        feature = np.pad(feature, [(0, f_bin * 2 - feature.shape[0]), (0, 0)])  # fill the feature with zeros lol
-    else:
-        feature = feature[:, :num_frame_combine * (t_bin // num_frame_combine)].reshape(
-            f_bin, t_bin // num_frame_combine, num_frame_combine)
-        feature = np.concatenate([feature.mean(axis=-1), feature.std(axis=-1)], axis=0)
-    
-    feature_file = os.path.join(feature_dir, stu_id)
-    np.savez(feature_file, feature=feature.T, time_stamp=time_block)
-
-    return feature.T, time_block
 
 
 def segment_audio(
-    model=None,
-    audio_path=None,
-    feature_path=None,
+    model: sklearn.svm.SVC,
+    audio_path: Optional[str] = None,
+    feature_path: Optional[str] = None,
 
     sr=22050,
     block_size=4096,
@@ -135,11 +40,11 @@ def segment_audio(
     max_seg_tolerant=15
     ):
     """
-    TODO: add documentation
+    Segment from raw audio or extracted feature
 
     Parameters
     ----------
-    model : sklearn svm (?)
+    model : sklearn.svm.SVC
         svm model
     audio : Optional[str], optional
         path to the audio file, by default None
@@ -183,7 +88,7 @@ def segment_audio(
     pred -= 1 # conver 1/2 to 0/1
 
     # stage 1 post-processing
-    pred = smooth_label(pred, SMOOTH_LABEL)
+    pred = smooth_label(pred)
     seg = pred2seg(pred, time_stamp)
 
     if len(seg) == num_exercise:  # correct after stage 1
@@ -275,7 +180,7 @@ def segment_dir(
         else:
             fail_list.append(stu_id)
 
-        f = open(os.path.join(output_dir, 'report.txt'), 'w')
+    f = open(os.path.join(output_dir, 'report.txt'), 'w')
 
     # Count the files
     f.write("Total file count: {}\n".format(len(files)))
