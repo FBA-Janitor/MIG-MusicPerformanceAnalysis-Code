@@ -24,7 +24,7 @@ segmentation:
   2016:
     concert: "./MIG-FbaData/FBA2016/concertband/assessments"
     middle: "./MIG-FbaData/FBA2016/middleschool/assessments"
-    symphonic: "./MIG-FbaData/FBA2017/symphonicband/assessments"
+    symphonic: "./MIG-FbaData/FBA2016/symphonicband/assessments"
   2017:
     concert: "./MIG-FbaData/FBA2017/concertband/assessments"
     middle: "./MIG-FbaData/FBA2017/middleschool/assessments"

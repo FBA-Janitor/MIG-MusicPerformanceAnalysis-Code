@@ -448,7 +448,8 @@ def normalize_summary_csv(
     xlsx_config_path: str = xlsx_config_path,
     missing_max_score_config_path: str = missing_max_score_config_path,
     name_change_config_path: str = assessment_name_change_config_path,
-    write_csv: Optional[str] = None,
+    write_csv: bool= True,
+    write_csv_path: Optional[str] = None
 ):
     """
     Read in normalized summary csv file
@@ -479,7 +480,9 @@ def normalize_summary_csv(
         path to configuration file with name change in max score, by default missing_max_score_config_path,
     name_change_config_path: str, optional
         path to configuration file with name change in assessment, by default assessment_name_change_config_path,
-    write_csv: Optional[str], optional  # FIXME: the variable type is confusing here, this should be a boolean variable
+    write_csv: bool
+        whether to write the normalized csv, by default True
+    write_csv_path: Optional[str], optional
         path to write the normalized csv, by default {year}_{band}_normalized.csv
     
     Returns
@@ -537,9 +540,9 @@ def normalize_summary_csv(
     if write_csv == False:
         return df
 
-    if write_csv is not None:   # FIXME: write_csv should be a boolean variable
-        if write_csv == True:
-            write_csv = os.path.join(
+    if write_csv == True: 
+        if write_csv_path is None:
+            write_csv_path = os.path.join(
                 root,
                 data_repo,
                 "cleaned",
@@ -547,9 +550,11 @@ def normalize_summary_csv(
                 "summary",
                 f"{year}_{band}_normalized.csv",
             )
+        else:
+            write_csv_path = write_csv_path
 
-        assert type(write_csv) == str
-        df.to_csv(write_csv, index=False, header=True)
+        assert type(write_csv_path) == str
+        df.to_csv(write_csv_path, index=False, header=True)
 
     return df
 
