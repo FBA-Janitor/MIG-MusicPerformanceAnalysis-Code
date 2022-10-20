@@ -395,7 +395,7 @@ def process(
     print(f"\n\n{len(not_found)}/{len(subfolders)} students not found in summary sheet.")
     
     has_audio = []
-    no_audio = []
+    no_audio = not_found.copy()
     
     for year in range(2013, 2018+1):
         for band in ['concert', 'middle', 'symphonic']:
@@ -416,23 +416,25 @@ def process(
             common = set(student_list).intersection(not_found)
             
             if len(common) > 0:
-                print(len(common))
+                print()
                 print(f"Checking for {year} {band}")
+                print(f"Found: {len(common)}")
+                if len(common) < 10:
+                    print(common)
                 print(f"Number of students in summary sheet: {len(student_list)}")
-            
-            
-            # print(set(student_list).intersection(not_found))
     
-    for nf in tqdm(not_found):
-        audio_files = glob.glob(os.path.join(root, data_repo, f"cleaned/audio/bystudent/{year}/{band}", f"**/{sid}*.mp3"), recursive=True)
-        # print(nf, audio_files)
-        
-        if len(audio_files) > 0:
-            has_audio.append(nf)
-        else:
-            no_audio.append(nf)
-            
-    print(f"{len(has_audio)} have audio files. {len(no_audio)} have no audio files.")
+            for nf in tqdm(no_audio):
+                audio_files = glob.glob(os.path.join(root, data_repo, f"cleaned/audio/bystudent/{year}/{band}", f"**/{sid}*.mp3"), recursive=True)
+                # print(nf, audio_files)
+                
+                if len(audio_files) > 0:
+                    print()
+                    print(f"{nf} found in {year} {band}")
+                    has_audio.append(nf)
+                    no_audio.remove(nf)
+    
+    print()
+    print(f"{len(has_audio)} have audio files somewhere. {no_audio} have no audio anywhere.")
         
     # print(not_found)
     

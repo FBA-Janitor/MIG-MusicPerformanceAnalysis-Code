@@ -28,18 +28,20 @@ def filename_to_id_check(filename):
 
     sid, suffix = out.groups()
 
-    valid = len(suffix) == 0
+    valid = (len(suffix) == 0)
 
     return int(sid), valid
 
 
-def get_task_list(
+def process(
     root,
     year,
     band,
+    data_repo=data_repo,
     audio_config_path=audio_config_path,
     name_change_config_path=audio_name_change_config_path,
 ):
+
     name_change_config = read_yaml_to_dict(root, name_change_config_path)["filenames"]
 
     name_change_config = [
@@ -59,11 +61,12 @@ def get_task_list(
 
     audio_path = read_yaml_to_dict(root, audio_config_path)["audio"][year][band]
 
-    files = sorted(
-        glob.glob(os.path.join(root, audio_path, "**/*.mp3"), recursive=True)
-    )
+    files = sorted(glob.glob(os.path.join(root, audio_path, "**/*.mp3"), recursive=True))
 
-    task_list = []
+    audio_folder = os.path.join(root, data_repo, "cleaned", "audio", "bystudent", str(year), band)
+    os.makedirs(audio_folder, exist_ok=True)
+
+    symlink_path = os.path.join(audio_folder, "{sid}", "{sid}.mp3")
 
     for file in tqdm(files):
         sid, valid = filename_to_id_check(file)
@@ -72,46 +75,15 @@ def get_task_list(
             error_entry = error_list[sid_error_list.index(sid)]
 
             fstem = file.replace(root + os.path.sep, "")
-            if error_entry["OldFileName"] == fstem:
+            if error_entry['OldFileName'] == fstem:
                 assert not valid
-                if error_entry.get("Reason", None) == "Duplicate":
-                    print("Duplicate, skipping: ", file)
+                if error_entry.get('Reason', None) == 'Duplicate':
+                    print('Duplicate, skipping: ', file)
                     continue
                 else:
-                    print(error_entry.get("Reason", "no reason provided"))
+                    print(error_entry.get('Reason', "no reason provided"))
         else:
             assert valid
-
-        task_list.append((file, sid))
-
-    return task_list
-
-
-def process(
-    root,
-    year,
-    band,
-    audio_config_path=audio_config_path,
-    name_change_config_path=audio_name_change_config_path,
-):
-
-    task_list = get_task_list(
-        root=root,
-        year=year,
-        band=band,
-        data_repo=data_repo,
-        audio_config_path=audio_config_path,
-        name_change_config_path=name_change_config_path,
-    )
-
-    audio_folder = os.path.join(
-        root, data_repo, "cleaned", "audio", "bystudent", str(year), band
-    )
-    os.makedirs(audio_folder, exist_ok=True)
-
-    symlink_path = os.path.join(audio_folder, "{sid}", "{sid}.mp3")
-
-    for file, sid in task_list:
 
         os.makedirs(os.path.join(audio_folder, str(sid)), exist_ok=True)
 
