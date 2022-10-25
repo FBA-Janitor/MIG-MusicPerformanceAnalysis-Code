@@ -9,7 +9,6 @@ import warnings
 import librosa
 import sklearn
 import numpy as np
-import scipy
 
 from utils.post_process import (
     combine_seg,
@@ -21,9 +20,74 @@ from utils.default_configs_path import (
     feature_write_dir,
 )
 from utils.feature import *
-from utils.utils import write_txt
 
 warnings.filterwarnings("ignore")
+
+
+def write_csv(
+    seg,
+    stu_id,
+    output_dir
+):
+    """
+    Write the segmentation results into a .csv file
+
+    Parameters
+    ----------
+    seg : np.ndarray
+    """
+    new_file = open(os.path.join(output_dir, "{}.csv".format(stu_id)), 'w')
+    new_file.write("Start,Duration,End\n")
+    for i in range(len(seg)):
+        output = '{:.6f},{:.6f},{:.6f}\n'.format(seg[i][0], seg[i][1], seg[i][2])
+        new_file.write(output)
+    new_file.close()
+
+
+def write_report(
+    output_dir,
+    files,
+    stage_1_success,
+    stage_2_success,
+    fail_list
+):
+    """
+    Generate the report of auto segmentation
+
+    Parameters
+    ---------
+    output_dir : str
+        path to the output directory
+    files : List[str]
+        all student id
+    stage_1_success : List[str]
+        student id of success after the first stage pre-processing
+    stage_2_success : List[str]
+        student id of success after the second stage pre-processing
+    fail_list : List[str]
+        student id of failing to auto segment
+    """
+    f = open(os.path.join(output_dir, 'report.txt'), 'w')
+
+    # Count the files
+    f.write("Total file count: {}\n".format(len(files)))
+    f.write("First stage success: {}\n".format(len(stage_1_success)))
+    f.write("Second stage success: {}\n".format(len(stage_2_success)))
+    f.write("Failed: {}\n".format(len(fail_list)))
+    f.write('\n')
+
+    # Write the list
+    f.write("First stage success file list:\n")
+    for stu_id in stage_1_success:
+        f.write('\t{}\n'.format(stu_id))
+    f.write("Second stage success file list:\n")
+    for stu_id in stage_2_success:
+        f.write('\t{}\n'.format(stu_id))
+    f.write("Failed file list:\n")
+    for stu_id in fail_list:
+        f.write('\t{}\n'.format(stu_id))
+    
+    print("Successful classification! Results in {}".format(output_dir))
 
 
 def segment_audio(
@@ -38,7 +102,7 @@ def segment_audio(
 
     num_exercise=5,
     max_seg_tolerant=15
-    ):
+):
     """
     Segment from raw audio or extracted feature
 
@@ -72,13 +136,15 @@ def segment_audio(
     """
 
     assert audio_path is not None or feature_path is not None  # use either audio or feature
-    if feature_path is None:
+    if feature_path is None:    # use audio file
         _, basename = os.path.split(audio_path)
         stu_id, _ = re.match(r"(\d{5})(\.mp3)", basename).groups()
 
         y, _ = librosa.load(audio_path, sr=sr, mono=True)
+        
+        # write feature into feature_write_dir
         feature, time_stamp = write_feature(y, stu_id, feature_write_dir, sr, block_size, hop_size)
-    else:
+    else:   # use feature file
         with open(feature_path, 'rb') as f:
             feature_save = np.load(f)
             feature = feature_save['feature']
@@ -98,7 +164,7 @@ def segment_audio(
         return -1, seg
     
     else:
-        seg = combine_seg(seg, target_count=num_exercise, min_mus_time=3.)
+        seg = combine_seg(seg, target_count=num_exercise, min_performance_time=5.)
         return 2, seg
 
 def segment_dir(
@@ -172,7 +238,7 @@ def segment_dir(
                 sr=sr, block_size=block_size, hop_size=hop_size, feature_dir=feature_write_dir,
                 num_exercise=num_exercise, max_seg_tolerant=max_seg_tolerant)
         
-        write_txt(seg, "{}.txt".format(stu_id), output_dir)
+        write_csv(seg, stu_id, output_dir)
         if success == 1:
             stage_1_success.append(stu_id)
         elif success == 2:
@@ -180,27 +246,7 @@ def segment_dir(
         else:
             fail_list.append(stu_id)
 
-    f = open(os.path.join(output_dir, 'report.txt'), 'w')
-
-    # Count the files
-    f.write("Total file count: {}\n".format(len(files)))
-    f.write("First stage success: {}\n".format(len(stage_1_success)))
-    f.write("Second stage success: {}\n".format(len(stage_2_success)))
-    f.write("Failed: {}\n".format(len(fail_list)))
-    f.write('\n')
-
-    # Write the list
-    f.write("First stage success file list:\n")
-    for stu_id in stage_1_success:
-        f.write('\t{}\n'.format(stu_id))
-    f.write("Second stage success file list:\n")
-    for stu_id in stage_2_success:
-        f.write('\t{}\n'.format(stu_id))
-    f.write("Failed file list:\n")
-    for stu_id in fail_list:
-        f.write('\t{}\n'.format(stu_id))
-    
-    print("Successful classification! Results in {}".format(output_dir))
+    write_report(output_dir, files, stage_1_success, stage_2_success, fail_list)
 
 
 if __name__ == "__main__":
