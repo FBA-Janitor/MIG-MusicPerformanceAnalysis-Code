@@ -1,0 +1,5 @@
+pyin:
+  frame_length: 1024
+  hop_length: 256
+  fmin: 40
+  fmax: 1600
