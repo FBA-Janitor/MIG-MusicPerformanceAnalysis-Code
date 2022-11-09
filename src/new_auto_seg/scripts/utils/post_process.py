@@ -1,5 +1,10 @@
 import numpy as np
 
+"""
+TODO: post-processing
+- inform which short segments to remove
+"""
+
 
 def smooth_performance(
     pred,
@@ -48,18 +53,24 @@ def smooth_label(
 ):
     """
     Smooth the prediction label to remove short segments of performance or silence
+    Now: smooth 1-0-1 and 0-1-0 segments
     TODO: use smart smoothing
 
     Parameters
     ----------
     pred : np.ndarray
-        (num_frame, ), initial prediction results, 0 or 1
+        (num_frame, ), initial prediction, 0 or 1
     min_performance_frame : int, optional
-        minimum length of performance segments
+        minimum length of performance segments, by default 3
     min_silence_frame : int, optional
-        minimum length of non-performance segments
+        minimum length of non-performance segments, by default 3
     smooth_performance_first : bool, optional
         whether to remove the short performance segments then silence segments, by default True
+    
+    Return
+    ----------
+    pred : np.ndarray
+        (num_frame, ), smoothed predictions
     """
     # Assume the first and the last frame is non-performance
     pred[0] = 0
@@ -83,11 +94,18 @@ def smooth_label(
 def pred2seg(pred, time_stamp):
     """
     Convert the raw prediction output to the time_stamp
-    Input:
-        pred: np.ndarray, (num_frame, ), prediction of model
-        time_stamp: np.ndarray, (num_frame, ), corresponding time stamp of the starting time of each frame
-    Output:
-        seg: (num_seg, 3), start time, duration and end time of each segments
+    
+    Parameters
+    ----------
+    pred : np.ndarray
+        (num_frame, ), prediction of model
+    time_stamp : np.ndarray
+        (num_frame, ), corresponding time stamp of the starting time of each frame
+    
+    Return
+    ----------
+    seg: np.ndarray
+        (num_seg, 3), start time, duration and end time of each segments
     """
 
     begin_diff = np.diff(pred, append=0)
@@ -104,6 +122,19 @@ def combine_seg(
     target_count,
     min_performance_time=5.0
     ):
+    """
+    Remove short performance segments that are too short,
+    then remove last shortest non-performance short.
+
+    Parameters:
+    ----------
+    seg: np.ndarray
+        (num_segments, 3), start, duration and end time for each segment
+    target_count: int
+        target num segments of the piece
+    min_performance_time: float, optional
+        filter out the performance segments that have duration < min_performance_time, by default 5.0
+    """
 
     performance_begin, performance_duration, performance_end = seg[:, 0], seg[:, 1], seg[:, 2]
 

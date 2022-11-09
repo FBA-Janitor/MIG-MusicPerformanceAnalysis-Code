@@ -2,7 +2,7 @@ import glob
 import os
 import pickle
 import re
-from typing import Optional
+from typing import Optional, Union
 from tqdm import tqdm
 import warnings
 
@@ -16,8 +16,8 @@ from utils.post_process import (
     pred2seg
 )
 from utils.default_configs_path import (
-    model_path,
-    feature_write_dir,
+    model_load_path,
+    feature_write_dir
 )
 from utils.feature import *
 
@@ -35,7 +35,14 @@ def write_csv(
     Parameters
     ----------
     seg : np.ndarray
+        (num_segments, 3), the start, duration and end time for each segment
+    stu_id : 
+
+    Return
+    ----------
+    None
     """
+
     new_file = open(os.path.join(output_dir, "{}.csv".format(stu_id)), 'w')
     new_file.write("Start,Duration,End\n")
     for i in range(len(seg)):
@@ -55,7 +62,7 @@ def write_report(
     Generate the report of auto segmentation
 
     Parameters
-    ---------
+    ----------
     output_dir : str
         path to the output directory
     files : List[str]
@@ -66,6 +73,11 @@ def write_report(
         student id of success after the second stage pre-processing
     fail_list : List[str]
         student id of failing to auto segment
+
+    Return
+    ----------
+    None
+
     """
     f = open(os.path.join(output_dir, 'report.txt'), 'w')
 
@@ -91,7 +103,7 @@ def write_report(
 
 
 def segment_audio(
-    model: sklearn.svm.SVC,
+    model: Union[str, sklearn.svm.SVC, None] = model_load_path,
     audio_path: Optional[str] = None,
     feature_path: Optional[str] = None,
 
@@ -108,8 +120,9 @@ def segment_audio(
 
     Parameters
     ----------
-    model : sklearn.svm.SVC
-        svm model
+    model : str or sklearn.svm.SVC
+        (str) path to the svm model or
+        (sklearn.svm.SVC) the svm model
     audio : Optional[str], optional
         path to the audio file, by default None
     feature : Optional[str], optional
@@ -150,6 +163,12 @@ def segment_audio(
             feature = feature_save['feature']
             time_stamp = feature_save['time_stamp']
 
+    if isinstance(model, str):
+        with open(model, 'rb') as f:
+            model = pickle.load(f) 
+    assert isinstance(model, sklearn.svm.SVC),\
+        "Expect model to be sklearn.svm.SVC, but got {}".format(type(model))
+
     pred = model.predict(feature)
     pred -= 1 # conver 1/2 to 0/1
 
@@ -167,10 +186,11 @@ def segment_audio(
         seg = combine_seg(seg, target_count=num_exercise, min_performance_time=5.)
         return 2, seg
 
+
 def segment_dir(
     input_dir,
     output_dir,
-    model_path=model_path,
+    model_path=model_load_path,
 
     from_feature=False,
     sr=22050,
@@ -235,7 +255,7 @@ def segment_dir(
             _, basename = os.path.split(file)
             stu_id, _ = re.match(r"(\d{5})(\.mp3)", basename).groups()
             success, seg = segment_audio(model, audio_path=file,
-                sr=sr, block_size=block_size, hop_size=hop_size, feature_dir=feature_write_dir,
+                sr=sr, block_size=block_size, hop_size=hop_size, feature_write_dir=feature_write_dir,
                 num_exercise=num_exercise, max_seg_tolerant=max_seg_tolerant)
         
         write_csv(seg, stu_id, output_dir)

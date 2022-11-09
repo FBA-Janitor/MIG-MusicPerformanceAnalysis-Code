@@ -5,8 +5,8 @@ import numpy as np
 import scipy
 
 SPECTROGRAM_CALCULATE = 'old'  # scipy for old, librosa for new
-FEATURE_EXTRACTION = 'old'     # manually calculate the feature for old
-FEAUTRE_GROUPING = 'old'       # bug in old code
+FEATURE_EXTRACTION = 'new'     # manually calculate the feature for old
+FEAUTRE_GROUPING = 'new'       # bug in old code
 
 
 
@@ -243,7 +243,15 @@ def write_feature(
             np.zeros(num_iterations, dtype=np.float32) # FIXME: so ugly, fix me plz
         ])
     else:
-        raise NotImplementedError("New feature extraction not implemented yet!")
+        feature = np.vstack([
+            FeatureTimeRms(audio, block_size, hop_size, sr)[:num_iterations],
+            FeatureSpectralCrestFactor(spec, sr)[:num_iterations],
+            FeatureSpectralCentroid(spec, sr)[:num_iterations],
+            FeatureTimeZeroCrossingRate(audio, block_size, hop_size, sr)[:num_iterations],
+            FeatureSpectralRolloff(spec, sr)[:num_iterations],
+            FeatureSpectralFlux(spec, sr)[:num_iterations],
+            FeatureSpectralMfccs(spec, sr)[:, :num_iterations],
+        ])
 
     # Arrange the features in larger blocks
     # where each large block contains the 
