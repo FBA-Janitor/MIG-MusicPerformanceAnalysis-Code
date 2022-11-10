@@ -18,6 +18,8 @@ from utils.default_configs_path import (
     pyin_repo,
 )
 
+from assessment_scores.organize_scores import read_normalized_csv
+
 
 def read_txt_to_df(txt_path, header="// data format: "):
     """
@@ -29,7 +31,7 @@ def read_txt_to_df(txt_path, header="// data format: "):
         path to the txt file
     header : str
         format of the header prefix
-    
+
     Returns
     -------
     pd.DataFrame
@@ -37,19 +39,19 @@ def read_txt_to_df(txt_path, header="// data format: "):
 
     with open(txt_path, "r") as f:
         content = f.read()
-        
+
     if header not in content:
         if re.match(r"\d*", content):
             content = "start_time(sec)\tduration(sec)\n" + content
         else:
             content = "instrument name(str)\tactivity name(str)\n" + content
-    
+
     content = content.replace(header, "")
 
     content = re.sub(r"[\t ]{2,}", "\t", content)
 
     df = pd.read_table(StringIO(content))
-    
+
     if df.shape[-1] < 2:
         df = pd.read_table(StringIO(content), delim_whitespace=True)
 
@@ -74,7 +76,7 @@ def read_pyin(pyin_path, correct_timestamp=True, k=7):
         ntl = tl.shape[0]
         nt = t.shape[0]
         ntg = tg.shape[0]
-        
+
         assert ntl + ntg == nt
 
         dt0 = t[1] - t[0]
@@ -85,7 +87,7 @@ def read_pyin(pyin_path, correct_timestamp=True, k=7):
                 np.concatenate(
                     [
                         np.abs(tl - np.round(dt * np.arange(ntl), 3)),
-                        np.abs(tg - np.round(dt * np.arange(ntl + 1, nt+1), 2)[:ntg]),
+                        np.abs(tg - np.round(dt * np.arange(ntl + 1, nt + 1), 2)[:ntg]),
                     ]
                 )
             )
@@ -136,17 +138,21 @@ def clean_instrument(
     Optional[pd.DataFrame]
         DataFrame with instrument labels
     Optional[str]
-        Instrument 
+        Instrument
     """
-    
+
     if has_instrument:
         insts_df = read_txt_to_df(
             os.path.join(thefolder, f"{sid}_instrument.txt")
         ).rename(columns=col_rename)
 
         try:
-            insts_df["Instrument"] = insts_df["Instrument"].apply(lambda i: inst_codes[i])
-            insts_df["ScoreGroup"] = insts_df["ScoreGroup"].apply(lambda s: segm_codes[s])
+            insts_df["Instrument"] = insts_df["Instrument"].apply(
+                lambda i: inst_codes[i]
+            )
+            insts_df["ScoreGroup"] = insts_df["ScoreGroup"].apply(
+                lambda s: segm_codes[s]
+            )
         except Exception as e:
             print(sid)
             print(insts_df.columns)
@@ -173,13 +179,12 @@ def clean_instrument(
         # print(int(sid) in summary_df["Student"].astype(int).unique().tolist())
         # print(sid)
         return None, None
-    
+
     sdf_inst = sdf_inst0["Instrument"].unique()
     if len(sdf_inst) == 0:
         # print(sdf_inst0)
         return None, None
-    
-        
+
     assert len(sdf_inst) == 1, (sid, sdf_inst)
     sdf_inst = sdf_inst[0]
 
@@ -231,26 +236,24 @@ def clean_segment(
         whether to remove the short segments, by default True
     short_segment_threshold : float
         the threshold of short segment to remove, by default 1.0
-    
+
     Returns
     -------
     Optional[dict]
     """
 
     segments = read_txt_to_df(os.path.join(thefolder, f"{sid}_segment.txt"))
-    
+
     segments.columns = [c.strip() for c in segments.columns]
-    segments = segments.rename(
-        columns=col_rename
-    )
-    
+    segments = segments.rename(columns=col_rename)
+
     try:
         segments["End"] = segments["Start"] + segments["Duration"]
     except Exception as e:
         print(sid)
         print(segments.shape)
         print(segments)
-    
+
     if remove_short_segment:
         segments = segments[
             segments["Duration"] > short_segment_threshold
@@ -266,7 +269,7 @@ def clean_segment(
         perc_inst,
         summary_df,
     )
-    
+
     if insts_df is None and instrument is None:
         return None
 
@@ -351,22 +354,13 @@ def process(
         path to configuration file with the meanings of segmentation codes, by default segmentation_code_config_path
     segmentation_order_config_path: str, optional
         path to configuration with the order of segmentations, by default segmentation_order_config_path
-    
+
     Returns
     -------
     None
     """
 
-    summary_df = pd.read_csv(
-        os.path.join(
-            root,
-            data_repo,
-            "cleaned",
-            "assessment",
-            "summary",
-            f"{year}_{band}_normalized.csv",
-        )
-    )
+    summary_df = read_normalized_csv(root, year, band, data_repo)
 
     segmentation_path = read_yaml_to_dict(root, segmentation_config_path)[
         "segmentation"
@@ -386,7 +380,7 @@ def process(
         for f in os.listdir(os.path.join(root, segmentation_path))
         if os.path.isdir(os.path.join(root, segmentation_path, f))
     ]
-    
+
     not_found = []
 
     for sid in tqdm(subfolders):
@@ -411,7 +405,7 @@ def process(
                 segmentation_order_config,
                 summary_df,
             )
-            
+
             if cleaned_segment is None:
                 not_found.append(int(sid))
                 continue
@@ -488,18 +482,20 @@ def process(
             )
 
             # print(pyin)
-    
+
     if len(not_found) == 0:
-        return    
-    
-    print(f"\n\n{len(not_found)}/{len(subfolders)} students not found in summary sheet.")
-    
+        return
+
+    print(
+        f"\n\n{len(not_found)}/{len(subfolders)} students not found in summary sheet."
+    )
+
     has_audio = []
-    no_audio = []
-    
-    for year in range(2013, 2018+1):
-        for band in ['concert', 'middle', 'symphonic']:
-            
+    no_audio = not_found.copy()
+
+    for year in range(2013, 2018 + 1):
+        for band in ["concert", "middle", "symphonic"]:
+
             summary_df = pd.read_csv(
                 os.path.join(
                     root,
@@ -511,32 +507,41 @@ def process(
                 )
             )
 
-
-            student_list = [int(s) for s in summary_df['Student'].unique().tolist()]
+            student_list = [int(s) for s in summary_df["Student"].unique().tolist()]
             common = set(student_list).intersection(not_found)
-            
+
             if len(common) > 0:
-                print(len(common))
+                print()
                 print(f"Checking for {year} {band}")
+                print(f"Found: {len(common)}")
+                if len(common) < 10:
+                    print(common)
                 print(f"Number of students in summary sheet: {len(student_list)}")
-            
-            
-            # print(set(student_list).intersection(not_found))
-    
-    for nf in tqdm(not_found):
-        audio_files = glob.glob(os.path.join(root, data_repo, f"cleaned/audio/bystudent/{year}/{band}", f"**/{sid}*.mp3"), recursive=True)
-        # print(nf, audio_files)
-        
-        if len(audio_files) > 0:
-            has_audio.append(nf)
-        else:
-            no_audio.append(nf)
-            
-    print(f"{len(has_audio)} have audio files. {len(no_audio)} have no audio files.")
-        
+
+            for nf in tqdm(no_audio):
+                audio_files = glob.glob(
+                    os.path.join(
+                        root,
+                        data_repo,
+                        f"cleaned/audio/bystudent/{year}/{band}",
+                        f"**/{sid}*.mp3",
+                    ),
+                    recursive=True,
+                )
+                # print(nf, audio_files)
+
+                if len(audio_files) > 0:
+                    print()
+                    print(f"{nf} found in {year} {band}")
+                    has_audio.append(nf)
+                    no_audio.remove(nf)
+
+    print()
+    print(
+        f"{len(has_audio)} have audio files somewhere. {no_audio} have no audio anywhere."
+    )
+
     # print(not_found)
-    
-    
 
 
 def process_multiyear(
@@ -579,7 +584,7 @@ def process_multiyear(
         path to configuration file with the meanings of segmentation codes, by default segmentation_code_config_path
     segmentation_order_config_path: str, optional
         path to configuration with the order of segmentations, by default segmentation_order_config_path
-    
+
     Returns
     -------
     None
