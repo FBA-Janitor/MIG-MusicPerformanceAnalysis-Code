@@ -8,6 +8,17 @@ import pandas as pd
 from core.subdatasets import GenericSubdataset
 
 class SegmentDataset(GenericSubdataset):
+    """
+    A generic class for FBA Subdataset
+
+    Parameters
+    ----------
+    student_information : List[Tuple]
+        List of tuples (student_id, year, band), to load the data
+    data_root : str
+        root directory of the data
+    """
+    
     def __init__(
         self,
         student_information : List[Tuple],

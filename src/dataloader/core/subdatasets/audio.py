@@ -7,6 +7,19 @@ import librosa
 from core.subdatasets import GenericSubdataset
 
 class AudioDataset(GenericSubdataset):
+    """
+    A generic class for FBA Subdataset
+
+    Parameters
+    ----------
+    student_information : List[Tuple]
+        List of tuples (student_id, year, band), to load the data
+    data_root : str
+        root directory of the audio data
+    sr : int
+        sampling rate when read the audio
+    """
+    
     def __init__(
         self,
         student_information : List[Tuple],
