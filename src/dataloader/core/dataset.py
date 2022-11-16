@@ -13,6 +13,7 @@ class FBADataset(GenericDataset):
         score=True,
         config_root="/media/fba/MIG-MusicPerformanceAnalysis-Code/src/data_parse/config",
         audio_data_root="/home/yding402/fba-data/MIG-FBA-Data-Cleaning/cleaned/audio/bystudent",
+        feature_data_root="/home/yding402/fba-data/tmp_feature",
         segment_data_root="/home/yding402/fba-data/MIG-FBA-Data-Cleaning/cleaned/segmentation/bystudent"
     ) -> None:
         super().__init__()
@@ -23,7 +24,7 @@ class FBADataset(GenericDataset):
 
         self.subdatasets = dict()
         if use_audio:
-            self.subdatasets["audio"] = AudioDataset(student_information, data_root=audio_data_root)
+            self.subdatasets["audio"] = AudioDataset(student_information, data_root=audio_data_root, feature_save_dir=feature_data_root)
         if segment:
             self.subdatasets["segment"] = SegmentDataset(student_information, data_root=segment_data_root)
 
