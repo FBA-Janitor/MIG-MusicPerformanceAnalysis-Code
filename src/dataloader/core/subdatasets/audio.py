@@ -6,7 +6,7 @@ import librosa
 import numpy as np
 
 from core.subdatasets import GenericSubdataset
-from core.preprocess.segment_feature import extract_feature
+from core.preprocess.segment_feature import extract_segment_feature
 
 class AudioDataset(GenericSubdataset):
     """
@@ -46,7 +46,7 @@ class AudioDataset(GenericSubdataset):
 
         for (sid, year, band) in self.student_information:
 
-            feature_path = os.path.join(self.feature_save_dir, "{}_{}_{}.npz".format(year, band, sid))
+            feature_path = os.path.join(self.feature_save_dir, "{}_{}_{}.npy".format(year, band, sid))
             audio_path = os.path.join(self.data_root, str(year), band, "{}/{}.mp3".format(sid, sid))
 
             self.data_path[sid] = (audio_path, feature_path)
@@ -71,9 +71,11 @@ class AudioDataset(GenericSubdataset):
         return feature
 
     def _read_from_audio(self, data_path):
+        # TODO: support flexible feature extraction
         audio_path, feature_path = data_path
 
         y, _ = librosa.load(audio_path, sr=self.sr)
-        feature = extract_feature(y, sr=self.sr, block_size=self.block_size, hop_size=self.hop_size)
-        np.savez(feature_path, **feature)
+        feature = extract_segment_feature(y, sr=self.sr, block_size=self.block_size, hop_size=self.hop_size)
+        with open(feature_path, 'wb') as f:
+            np.save(f, feature)
         return feature
