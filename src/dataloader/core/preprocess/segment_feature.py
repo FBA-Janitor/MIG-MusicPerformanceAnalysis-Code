@@ -1,10 +1,8 @@
-import os
+
 import math
 
 import numpy as np
-import scipy
-
-SPECTROGRAM_CALCULATE = 'old'
+import librosa
 
 # ***************** Lerch's Features *******************
 
@@ -183,7 +181,7 @@ def ToolMfccFbL(iFftLength, f_s):
     return (H)
 
 
-def extract_feature(
+def extract_segment_feature(
     audio: np.ndarray,
 
     sr=22050,
@@ -204,53 +202,47 @@ def extract_feature(
     hop_size : int, optional
         hop size used to extract the feature, by default 2048
 
-    Returns
+    Return
     ----------
     np.ndarray
         (time_frame, num_feature), the feature vector of the audio
-    np.ndarray
-        (time_frame, ), the timestamp of each time frame
     """
 
     # Compute the spectrogram (freq, time)
-    # TODO: don't use scipy, use librosa or something more stable instead
-    if SPECTROGRAM_CALCULATE == 'old':
-        hops = np.arange(0, len(audio) -1, hop_size)
-        hops += block_size
-        big = max(hops[hops < len(audio) - 1])
-        num_iterations = int((big - block_size) / hop_size) + 1
-        _, _, spec = scipy.signal.spectrogram(audio, nperseg=block_size, noverlap=hop_size, mode='magnitude')
-    else:
-        raise NotImplementedError("New spectrogram cacluation not implemented yet!")
-    
+    spec = librosa.stft(y=audio, n_fft=block_size, hop_length=hop_size)
+    spec = np.abs(spec) ** 2
+        
     # Extract the feature
     feature = np.vstack([
-        FeatureTimeRms(audio, block_size, hop_size, sr)[:num_iterations],
-        FeatureSpectralCrestFactor(spec, sr)[:num_iterations],
-        FeatureSpectralCentroid(spec, sr)[:num_iterations],
-        FeatureTimeZeroCrossingRate(audio, block_size, hop_size, sr)[:num_iterations],
-        FeatureSpectralRolloff(spec, sr)[:num_iterations],
-        FeatureSpectralFlux(spec, sr)[:num_iterations],
-        FeatureSpectralMfccs(spec, sr)[:, :num_iterations],
+        FeatureTimeRms(audio, block_size, hop_size, sr),
+        FeatureSpectralCrestFactor(spec, sr),
+        FeatureSpectralCentroid(spec, sr),
+        FeatureTimeZeroCrossingRate(audio, block_size, hop_size, sr),
+        FeatureSpectralRolloff(spec, sr),
+        FeatureSpectralFlux(spec, sr),
+        FeatureSpectralMfccs(spec, sr),
     ])
 
-    # Arrange the features in larger blocks
-    # where each large block contains the 
-    # mean and std of the small frames,
-    # and the larger blocks ~ 1s
-    # The output will be like
-    # (num_seconds, num_feature * 2)
-    num_frame_combine = int(sr / hop_size) - 1
-    f_bin, t_bin = feature.shape
-    time_block = ((np.arange(t_bin)) * hop_size / sr) + block_size / sr
-    time_block = time_block[
-        0:
-        t_bin // num_frame_combine * num_frame_combine:
-        num_frame_combine]
-    
-    # group the features
-    feature = feature[:, :num_frame_combine * (t_bin // num_frame_combine)].reshape(
-        f_bin, t_bin // num_frame_combine, num_frame_combine)
-    feature = np.concatenate([feature.mean(axis=-1), feature.std(axis=-1)], axis=0)
+    return feature.T
 
-    return dict(feature=feature.T, time_stamp=time_block)
+    #### TODO: below are to be moved to model-specific pre-processing
+    # # Arrange the features in larger blocks
+    # # where each large block contains the 
+    # # mean and std of the small frames,
+    # # and the larger blocks ~ 1s
+    # # The output will be like
+    # # (num_seconds, num_feature * 2)
+    # num_frame_combine = int(sr / hop_size) - 1
+    # f_bin, t_bin = feature.shape
+    # time_block = ((np.arange(t_bin)) * hop_size / sr) + block_size / sr
+    # time_block = time_block[
+    #     0:
+    #     t_bin // num_frame_combine * num_frame_combine:
+    #     num_frame_combine]
+    
+    # # group the features
+    # feature = feature[:, :num_frame_combine * (t_bin // num_frame_combine)].reshape(
+    #     f_bin, t_bin // num_frame_combine, num_frame_combine)
+    # feature = np.concatenate([feature.mean(axis=-1), feature.std(axis=-1)], axis=0)
+
+    # return dict(feature=feature.T, time_stamp=time_block)
