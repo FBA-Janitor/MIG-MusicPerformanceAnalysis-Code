@@ -1,19 +1,18 @@
 from torch.utils import data
+from ..core.dataset import FBADataset as CoreFBADataset
 
 class FBADataset(data.Dataset):
     def __init__(
         self,
-        student_ids,
-        use_audio,
-        use_f0,
-        config_root="/media/fba/MIG-MusicPerformanceAnalysis-Code/src/data_parse/config",
+        **kwargs
     ) -> None:
         super().__init__()
 
-        self.length = len(student_ids)
+        self.dataset = CoreFBADataset(**kwargs)
+        self.length = self.dataset.length
 
     def __getitem__(self, index):
-        return super().__getitem__(index)
+        return self.dataset.get_item_by_index(index)
 
     def __len__(self):
         return self.length
