@@ -11,7 +11,7 @@ class FBADataModule(pl.LightningDataModule):
         self,
         train_yearbands: List[Tuple(int, str)],
         val_yearbands: Optional[List[Tuple(int, str)]] = None,
-        split_path="/data/kwatchar3/fba/ProbabilisticMPA/MIG-MusicPerformanceAnalysis-Code/src/split",
+        split_path="/media/fba/ProbabilisticMPA/MIG-MusicPerformanceAnalysis-Code/src/split",
     ) -> None:
         super().__init__()
 
