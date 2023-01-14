@@ -74,6 +74,8 @@ class AudioMelSpecDataset(AudioBaseDataset):
             n_mels=self.n_mels,
         )
 
+        mel_spec = librosa.power_to_db(mel_spec, ref=np.max)
+
         return np.transpose(mel_spec, (-1, -2)) # (time, freq)
 
 
