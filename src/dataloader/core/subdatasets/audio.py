@@ -54,8 +54,8 @@ class AudioMelSpecDataset(AudioBaseDataset):
         data_root: str,
         sr=22050,
         n_fft=2048,
-        hop_length=512,
-        n_mels=128,
+        hop_length=1024,
+        n_mels=96,
     ) -> None:
         super().__init__(student_information, data_root, sr)
 
