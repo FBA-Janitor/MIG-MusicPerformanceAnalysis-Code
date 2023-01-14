@@ -5,7 +5,7 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 
-from core.subdatasets import GenericSubdataset
+from . import GenericSubdataset
 
 class SegmentDataset(GenericSubdataset):
     """

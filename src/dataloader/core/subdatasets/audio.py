@@ -5,8 +5,8 @@ from typing import List, Tuple
 import librosa
 import numpy as np
 
-from core.subdatasets import GenericSubdataset
-from core.preprocess.segment_feature import extract_segment_feature
+from . import GenericSubdataset
+from ..preprocess.segment_feature import extract_segment_feature
 
 
 class AudioBaseDataset(GenericSubdataset):
@@ -41,7 +41,7 @@ class AudioBaseDataset(GenericSubdataset):
 
         for (sid, year, band) in self.student_information:
             audio_path = os.path.join(
-                self.data_root, str(year), band, "{}/{}.mp3".format(sid, sid)
+                self.data_root, str(year), band, "{}/{}.wav".format(sid, sid)
             )
 
             self.data_path[str(sid)] = audio_path
