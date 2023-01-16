@@ -17,6 +17,7 @@ warnings.filterwarnings("ignore")
 def train_svm(
     train_csv_list=train_csv_list,
     feature_dir=feature_write_dir,
+    model_save_path=model_save_path,
 
     sr=22050,
     block_size=4096,
@@ -33,6 +34,8 @@ def train_svm(
         path to save the feature data, first check whether there is feature in it,
         write feature into this directory if no extracted features found
         by default feature_write_dir
+    model_save_path : str, optional
+        path to save the model, by default model_save_path
     sr : int, optional
         sampling rate, only used if no extracted features found, by default 22050
     block_size : int, optional
@@ -40,12 +43,9 @@ def train_svm(
     hop_size : int, optional
         hop size for computing stft, only used if no extracted features found, by default 2048
 
-    Returns
+    Return
     ----------
-    np.ndarray
-        (num_frame, num_feature), feature data
-    np.ndarray
-        (num_frame, ), label data
+    None
     """
     X_train, y_train = load_data(train_csv_list, feature_dir, sr, block_size, hop_size)
     X_train = normalize_data(X_train)

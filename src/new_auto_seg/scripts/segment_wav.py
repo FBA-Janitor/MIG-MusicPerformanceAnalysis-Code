@@ -20,6 +20,7 @@ from utils.default_configs_path import (
     feature_write_dir
 )
 from utils.feature import *
+from utils.utils import normalize_data
 
 warnings.filterwarnings("ignore")
 
@@ -113,7 +114,9 @@ def segment_audio(
     feature_write_dir=feature_write_dir,
 
     num_exercise=5,
-    max_seg_tolerant=15
+    max_seg_tolerant=15,
+
+    stage_2_post_process=True
 ):
     """
     Segment from raw audio or extracted feature
@@ -139,7 +142,9 @@ def segment_audio(
         number of the exercises in the audio, by default 5
     max_seg_tolerant : int, optional
         the maximal number of segments after stage 1, more segments would be labeled as fail, by default 15
-    
+    stage_2_post_process : bool, optional
+        whether to do the second stage of post processing, by default True
+
     Returns
     ----------
     int
@@ -161,7 +166,7 @@ def segment_audio(
         with open(feature_path, 'rb') as f:
             feature_save = np.load(f)
             feature = feature_save['feature']
-            time_stamp = feature_save['time_stamp']
+            time_stamp = feature_save['time_stamp']     
 
     if isinstance(model, str):
         with open(model, 'rb') as f:
@@ -169,12 +174,15 @@ def segment_audio(
     assert isinstance(model, sklearn.svm.SVC),\
         "Expect model to be sklearn.svm.SVC, but got {}".format(type(model))
 
+    feature = normalize_data(feature)
     pred = model.predict(feature)
-    pred -= 1 # conver 1/2 to 0/1
 
     # stage 1 post-processing
     pred = smooth_label(pred)
     seg = pred2seg(pred, time_stamp)
+
+    if not stage_2_post_process: # do not do second stage
+        return 1, seg
 
     if len(seg) == num_exercise:  # correct after stage 1
         return 1, seg
@@ -199,7 +207,9 @@ def segment_dir(
     feature_write_dir=feature_write_dir,
 
     num_exercise=5,
-    max_seg_tolerant=15
+    max_seg_tolerant=15,
+
+    stage_2_post_process=True
 ):
     """
     Segment the audio file or feature file in a directory
@@ -228,7 +238,9 @@ def segment_dir(
         number of the exercises in the audio, by default 5
     max_seg_tolerant : int, optional
         the maximal number of segments after stage 1, more segments would be labeled as fail, by default 15
-    
+    stage_2_post_process : bool, optional
+        whether to do the second stage of post processing, by default True
+
     Returns
     ----------
     None
@@ -241,7 +253,7 @@ def segment_dir(
         files = sorted(glob.glob(os.path.join(input_dir, '*.npz'), recursive=True))
     else:
         files = sorted(glob.glob(os.path.join(input_dir, '**/*.mp3'), recursive=True))
-    
+
     stage_1_success = []
     stage_2_success = []
     fail_list = []
@@ -250,13 +262,13 @@ def segment_dir(
             _, basename = os.path.split(file)
             stu_id, _ = re.match(r"(\d{5})(\.npz)", basename).groups()
             success, seg = segment_audio(model, feature_path=file,
-                num_exercise=num_exercise, max_seg_tolerant=max_seg_tolerant)
+                num_exercise=num_exercise, max_seg_tolerant=max_seg_tolerant, stage_2_post_process=stage_2_post_process)
         else:
             _, basename = os.path.split(file)
             stu_id, _ = re.match(r"(\d{5})(\.mp3)", basename).groups()
             success, seg = segment_audio(model, audio_path=file,
                 sr=sr, block_size=block_size, hop_size=hop_size, feature_write_dir=feature_write_dir,
-                num_exercise=num_exercise, max_seg_tolerant=max_seg_tolerant)
+                num_exercise=num_exercise, max_seg_tolerant=max_seg_tolerant, stage_2_post_process=stage_2_post_process)
         
         write_csv(seg, stu_id, output_dir)
         if success == 1:
