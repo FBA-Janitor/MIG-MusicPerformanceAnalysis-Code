@@ -47,20 +47,21 @@ You might want to change the training data, the segment status file, the tempora
 The `2023_happy_new_year_model.pth` is trained in Jan 2023.
 
 The training uses the data below
-    - 2013 concert AltoSaxophone
-    - 2013 concert BbClarinet
-    - 2013 concert Flute
-    - 2013 middle AltoSaxophone
-    - 2013 middle BbClarinet
-    - 2013 middle Flute
-    - 2013 middle Trumpet
-    - 2013 middle Oboe
-    - 2014 concert AltoSaxophone
-    - 2014 concert BbClarinet
-    - 2014 concert Flute
-    - 2014 middle AltoSaxophone
-    - 2014 middle BbClarinet
-    - 2014 middle Flute
+
+- 2013 concert AltoSaxophone
+- 2013 concert BbClarinet
+- 2013 concert Flute
+- 2013 middle AltoSaxophone
+- 2013 middle BbClarinet
+- 2013 middle Flute
+- 2013 middle Trumpet
+- 2013 middle Oboe
+- 2014 concert AltoSaxophone
+- 2014 concert BbClarinet
+- 2014 concert Flute
+- 2014 middle AltoSaxophone
+- 2014 middle BbClarinet
+- 2014 middle Flute
 
 The evaluation results are below
 
