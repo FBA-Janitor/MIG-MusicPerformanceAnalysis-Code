@@ -43,4 +43,29 @@ You might want to change the training data, the segment status file, the tempora
 
 ## Model details
 
+### 2023_happy_new_year_model.pth
 The `2023_happy_new_year_model.pth` is trained in Jan 2023.
+
+The training uses the data below
+    - 2013 concert AltoSaxophone
+    - 2013 concert BbClarinet
+    - 2013 concert Flute
+    - 2013 middle AltoSaxophone
+    - 2013 middle BbClarinet
+    - 2013 middle Flute
+    - 2013 middle Trumpet
+    - 2013 middle Oboe
+    - 2014 concert AltoSaxophone
+    - 2014 concert BbClarinet
+    - 2014 concert Flute
+    - 2014 middle AltoSaxophone
+    - 2014 middle BbClarinet
+    - 2014 middle Flute
+
+The evaluation results are below
+
+| Test data    | Seg1  | Seg2  | Seg3  | Seg4  | Seg5  | Piece |
+| :----------: | :---: | :---: | :---: | :---: | :---: | :---: |
+| 2013 concert | 96.75 | 94.02 | 90.61 | 96.88 | 96.87 | 97.65 |
+| 2014 concert | 96.75 | 93.34 | 89.82 | 96.36 | 96.76 | 97.41 |
+| 2015 concert | 96.78 | 93.69 | 90.03 | 97.36 | 96.77 | 97.43 |
