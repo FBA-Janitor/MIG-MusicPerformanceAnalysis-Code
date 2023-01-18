@@ -37,7 +37,10 @@ def write_csv(
     ----------
     seg : np.ndarray
         (num_segments, 3), the start, duration and end time for each segment
-    stu_id : 
+    stu_id : str
+        student id
+    output_dir : str
+        directory to write the output csv
 
     Return
     ----------
@@ -80,25 +83,21 @@ def write_report(
     None
 
     """
-    f = open(os.path.join(output_dir, 'report.txt'), 'w')
+    f = open(os.path.join(output_dir, 'report.csv'), 'w')
+    f.write('StudentID,Status\n')
 
-    # Count the files
-    f.write("Total file count: {}\n".format(len(files)))
-    f.write("First stage success: {}\n".format(len(stage_1_success)))
-    f.write("Second stage success: {}\n".format(len(stage_2_success)))
-    f.write("Failed: {}\n".format(len(fail_list)))
-    f.write('\n')
-
-    # Write the list
-    f.write("First stage success file list:\n")
-    for stu_id in stage_1_success:
-        f.write('\t{}\n'.format(stu_id))
-    f.write("Second stage success file list:\n")
-    for stu_id in stage_2_success:
-        f.write('\t{}\n'.format(stu_id))
-    f.write("Failed file list:\n")
-    for stu_id in fail_list:
-        f.write('\t{}\n'.format(stu_id))
+    stage_1_success = set(stage_1_success)
+    stage_2_success = set(stage_2_success)
+    fail_list = set(fail_list)
+    
+    for sid in sorted(list(stage_1_success | stage_2_success | fail_list)):
+        if sid in stage_1_success:
+            f.write('{},1\n'.format(sid))
+        elif sid in stage_2_success:
+            f.write('{},2\n'.format(sid))
+        elif sid in fail_list:
+            f.write('{},0\n'.format(sid))
+    f.close()
     
     print("Successful classification! Results in {}".format(output_dir))
 
