@@ -56,7 +56,7 @@ class FBADataModule(pl.LightningDataModule):
             id = np.load(
                 load_path
             )
-            ids.append(id)
+            ids.append([(idx, y, b) for idx in id])
 
         ids = np.concatenate(ids)
 

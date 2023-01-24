@@ -54,29 +54,33 @@ def get_student_information_for_segmentation(
     return sorted(student_information)
 
 
-def get_year_band_inst(year_filter: Optional[List[int]], band_filter: Optional[List[types.BandType]], inst_filter: Optional[List[types.InstrumentType]]):
-        
-        if year_filter is None:
-            year = types.YearRange
-        else:
-            year = year_filter
+def get_year_band_inst(
+    year_filter: Optional[List[int]],
+    band_filter: Optional[List[types.BandType]],
+    inst_filter: Optional[List[types.InstrumentType]],
+):
 
-        if band_filter is None:
-            band = types.get_valid_strings_from_literal(types.BandType)
-        else:
-            band = band_filter
+    if year_filter is None:
+        year = types.YearRange
+    else:
+        year = year_filter
 
-        if inst_filter is None:
-            inst = ["all"]
-        else:
-            inst = []
+    if band_filter is None:
+        band = types.get_valid_strings_from_literal(types.BandType)
+    else:
+        band = band_filter
 
-            for i in inst_filter:
-                if i in types.get_valid_strings_from_literal(types.InstrumentType):
-                    inst.append(i)
-                else:
-                    inst.extend(types.get_valid_strings_from_literal(types.__dict__[i + "Type"]))
-        
+    if inst_filter is None:
+        inst = ["all"]
+    else:
+        inst = []
 
-        return list(product(year, band, inst))
-    
+        for i in inst_filter:
+            if i in types.get_valid_strings_from_literal(types.InstrumentType):
+                inst.append(i)
+            else:
+                inst.extend(
+                    types.get_valid_strings_from_literal(types.__dict__[i + "Type"])
+                )
+
+    return list(product(year, band, inst))

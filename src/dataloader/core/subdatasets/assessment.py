@@ -56,10 +56,17 @@ class AssessmentDataset(GenericSubdataset):
 
         df = self.data_csv[(year, band)]
 
-        df = df[
-            (df["Student"] == sid)
-            & df["ScoreGroup"].apply(lambda s: s.replace(" ", "") == segment)
-        ][["Description", "NormalizedScore"]].reset_index(drop=True).set_index("Description").to_dict()["NormalizedScore"]
+        df = (
+            df[
+                (df["Student"] == sid)
+                & df["ScoreGroup"].apply(lambda s: s.replace(" ", "") == segment)
+            ][["Description", "NormalizedScore"]]
+            .reset_index(drop=True)
+            .set_index("Description")
+            .to_dict()["NormalizedScore"]
+        )
+
+        df = dict(sorted(df.items()))
 
         return df
 

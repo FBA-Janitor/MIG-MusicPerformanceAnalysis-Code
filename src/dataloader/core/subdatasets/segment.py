@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 import warnings
 from typing import List, Tuple
 
@@ -6,6 +7,10 @@ import numpy as np
 import pandas as pd
 
 from . import GenericSubdataset
+
+FAILED = 0
+SUCCESS = 1
+PARTIAL = 2
 
 class SegmentDataset(GenericSubdataset):
     """
@@ -22,36 +27,79 @@ class SegmentDataset(GenericSubdataset):
     def __init__(
         self,
         student_information : List[Tuple],
-        data_root : str = "/media/fba/MIG-FBA-Data-Cleaning/cleaned/segmentation/bystudent"
+        data_root : str = "/media/fba/MIG-FBA-Data-Cleaning/cleaned/segmentation/bystudent",
+        algo_data_root : str = "/media/fba/MIG-FBA-Segmentation/cleaned/algo-segmentation/bystudent",
     ) -> None:
-        super().__init__(student_information=student_information, data_root=data_root)
+        self.algo_data_root = algo_data_root
+        super().__init__(student_information=student_information, data_root=data_root, preload_data_path=False)
+        self.data_path = {} 
+        self._load_data_path()
+        self.student_information = self.validated_student_information()
+        self.student_ids = [str(x[0]) for x in self.student_information]
 
-    def _load_data_path(self):
 
-        for (sid, year, band) in self.student_information:
-
-            segment_path = os.path.join(self.data_root, str(year), band, "{}/{}_seginst.csv".format(sid, sid))
-            if not os.path.exists(segment_path):
-                warnings.warn("Missing segment file: {}".format(segment_path))
-                continue
-
-            self.data_path[str(sid)] = segment_path
 
     def validated_student_information(self):
         return [x for x in self.student_information if str(x[0]) in self.data_path]
 
+    def _load_data_path(self, verbose=False):
+
+        requested = len(self.student_information)
+        not_found = 0
+        found = 0
+
+        yearbands = set([(year, band) for sid, year, band in self.student_information])
+        status = {}
+        for year, band in yearbands:
+            algo_report = os.path.join(self.algo_data_root, "../summary", f"report_{year}_{band}.csv")
+            dfr = pd.read_csv(algo_report)
+            status[(year, band)] = dfr.set_index("StudentID").to_dict()["Status"]
+            # pprint(status[(year, band)])
+
+        for (sid, year, band) in self.student_information:
+
+            if str(sid) == "30028":
+                verbose = True
+                print("Found 30028")
+
+            segment_path = os.path.join(self.data_root, str(year), band, "{}/{}_seginst.csv".format(sid, sid))
+            if os.path.exists(segment_path):
+                found += 1
+            else:
+                if status[(year, band)][int(sid)] == SUCCESS:
+                    segment_path = os.path.join(self.algo_data_root, str(year), band, "{}/{}_seginst.csv".format(sid, sid))
+                    found += 1
+                else:
+                    not_found += 1
+                    if verbose:
+                        warnings.warn(f"No segment found for {sid}")
+                    continue
+
+            self.data_path[str(sid)] = segment_path
+            if verbose:
+                print(self.data_path[str(sid)])
+            verbose = False
+
+        print(f"Requested {requested} students: {found} have usable segmentation; {not_found} do not.")
+
+    
+
     def read_data_file(self, segment_path, **kwargs):
-        if segment_path is None:
-            return np.zeros([5, 2])
         seg_df = pd.read_csv(segment_path)
         start = seg_df["Start"]
         end = seg_df["End"]
         return np.vstack([start, end]).T
 
 if __name__ == "__main__":
-    segds = SegmentDataset(
-        student_information=[(29645, 2013, "middle"), (30349, 2013, "concert")]
-    )
+    
+    from ...torch.datamodule import FBADataModule
+    ids = FBADataModule(
+        [(2013, "middle", "Trumpet"), (2014, "middle", "BbClarinet")],{}
+    ).train_ids
 
-    for m in segds.get_item_by_student_id(29645):
-        print(m)
+    # print(ids)
+
+    segds = SegmentDataset(ids)
+
+    for sid in segds.student_ids:
+        print(segds.get_item_by_student_id(sid))

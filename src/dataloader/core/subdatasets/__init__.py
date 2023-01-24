@@ -18,6 +18,7 @@ class GenericSubdataset(ABC):
         self,
         student_information: List[Tuple],
         data_root: str,
+        preload_data_path: bool = True,
     ) -> None:
 
         self.student_information = student_information
@@ -26,9 +27,10 @@ class GenericSubdataset(ABC):
         ]
 
         self.data_root = data_root
-        self.data_path = {sid: None for sid in self.student_ids}
 
-        self._load_data_path()
+        if preload_data_path:
+            self.data_path = {sid: None for sid in self.student_ids}
+            self._load_data_path()
 
     def get_index_from_student_id(self, sid):
         return self.student_ids.index(sid)

@@ -29,7 +29,7 @@ class FBADataset(GenericDataset):
         super().__init__()
 
         self.segment_ds = SegmentDataset(
-            student_information, data_root=segment_data_root
+            student_information, data_root=segment_data_root, algo_data_root=algosegment_data_root
         )
 
         self.segment_name = segment
