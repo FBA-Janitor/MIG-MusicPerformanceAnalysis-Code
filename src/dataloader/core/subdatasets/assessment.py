@@ -11,10 +11,14 @@ class AssessmentDataset(GenericSubdataset):
         student_information: List[Tuple],
         data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/assessment/summary",
         use_normalized=True,
+        output_format='array'
     ) -> None:
-        super().__init__(student_information=student_information, data_root=data_root)
-
         assert use_normalized, "Only normalized data is available."
+        self.use_normalized = use_normalized
+        super().__init__(student_information=student_information, data_root=data_root)
+        
+        self.output_format = output_format
+        
 
     def _load_data_path(self):
         """
@@ -26,17 +30,27 @@ class AssessmentDataset(GenericSubdataset):
         for _, year, band in self.student_information:
             self.year_band.add((year, band))
 
-        for year, band in self.year_band:
+        print("Loading assessment data...", self.year_band)
 
+        if self.use_normalized:
             self.data_csv = {
                 (year, band): pd.read_csv(
                     os.path.join(self.data_root, f"{year}_{band}_normalized.csv")
                 )
+                for year, band in self.year_band
             }
+        else:
+            raise NotImplementedError
 
-        for (sid, year, band) in self.student_information:
+        self.data_path = {
+            str(sid): (sid, year, band)
+            for (sid, year, band) in self.student_information
+        }
 
-            self.data_path[str(sid)] = (sid, year, band)
+        print("Assessment data loaded.", self.data_csv.keys())
+
+    def validated_student_information(self):
+        return self.student_information
 
     def get_item_by_student_id(self, sid, start=None, end=None, segment=None):
         return self.read_data_file(
@@ -56,9 +70,11 @@ class AssessmentDataset(GenericSubdataset):
 
         df = self.data_csv[(year, band)]
 
+        df["Student"] = df["Student"].astype(int)
+
         df = (
             df[
-                (df["Student"] == sid)
+                (df["Student"] == int(sid))
                 & df["ScoreGroup"].apply(lambda s: s.replace(" ", "") == segment)
             ][["Description", "NormalizedScore"]]
             .reset_index(drop=True)
@@ -66,9 +82,15 @@ class AssessmentDataset(GenericSubdataset):
             .to_dict()["NormalizedScore"]
         )
 
-        df = dict(sorted(df.items()))
+        if self.output_format == 'dict':
+            out = dict(sorted(df.items()))
+        elif self.output_format == 'array':
+            out = np.array(list(df.values())).astype(np.float32)
+        else:
+            raise NotImplementedError
 
-        return df
+        # print(out)
+        return out
 
 
 if __name__ == "__main__":

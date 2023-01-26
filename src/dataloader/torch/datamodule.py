@@ -22,7 +22,7 @@ class FBADataModule(pl.LightningDataModule):
         super().__init__()
 
         self.split_path = split_path
-        
+
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.shuffle_train = shuffle_train
@@ -32,30 +32,27 @@ class FBADataModule(pl.LightningDataModule):
 
         self.verbose = verbose
 
-        self.train_ids = self.get_split_ids("train", year_band_inst)
-        self.val_ids = self.get_split_ids("valtest", year_band_inst)
-
+        self.train_info = self.get_split_ids("train", year_band_inst)
+        self.val_info = self.get_split_ids("valtest", year_band_inst)
 
     def get_split_ids(self, split, year_band_inst: List[Tuple[int, str, str]]):
         ids = []
 
         for y, b, i in year_band_inst:
             load_path = os.path.join(
-                    self.split_path,
-                    "canonical",
-                    str(y),
-                    b,
-                    f"{split}-{i.replace(' ', '')}.npy",
-                )
+                self.split_path,
+                "canonical",
+                str(y),
+                b,
+                f"{split}-{i.replace(' ', '')}.npy",
+            )
 
             if not os.path.exists(load_path):
                 if self.verbose:
                     warnings.warn("No split found for " + load_path)
                 continue
 
-            id = np.load(
-                load_path
-            )
+            id = np.load(load_path)
             ids.append([(idx, y, b) for idx in id])
 
         ids = np.concatenate(ids)
@@ -64,7 +61,7 @@ class FBADataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(
-            FBADataset(self.train_ids, **self.dataset_kwargs),
+            FBADataset(self.train_info, self.dataset_kwargs),
             batch_size=self.batch_size,
             shuffle=self.shuffle_train,
             num_workers=self.num_workers,
@@ -72,7 +69,7 @@ class FBADataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(
-            FBADataset(self.val_ids, **self.dataset_kwargs),
+            FBADataset(self.val_info, self.dataset_kwargs),
             batch_size=self.batch_size,
             shuffle=self.shuffle_val,
             num_workers=self.num_workers,

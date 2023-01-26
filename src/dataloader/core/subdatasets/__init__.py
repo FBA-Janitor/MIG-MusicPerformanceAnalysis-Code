@@ -18,7 +18,7 @@ class GenericSubdataset(ABC):
         self,
         student_information: List[Tuple],
         data_root: str,
-        preload_data_path: bool = True,
+        preload_data_path: bool = False,
     ) -> None:
 
         self.student_information = student_information
@@ -30,7 +30,13 @@ class GenericSubdataset(ABC):
 
         if preload_data_path:
             self.data_path = {sid: None for sid in self.student_ids}
-            self._load_data_path()
+        else:
+            self.data_path = {}
+
+        self._load_data_path()
+        self.student_information = self.validated_student_information()
+        self.student_ids = [str(x[0]) for x in self.student_information]
+        self.length = len(self.student_ids)
 
     def get_index_from_student_id(self, sid):
         return self.student_ids.index(sid)
@@ -40,6 +46,9 @@ class GenericSubdataset(ABC):
 
     def get_item_by_index(self, idx, start=None, end=None, segment=None):
         return self.get_item_by_student_id(self.student_ids[idx], start=start, end=end, segment=segment)
+
+    def validated_student_information(self):
+        raise NotImplementedError("Must be implemented in the Subdataset")
 
     def _load_data_path(self):
         """

@@ -20,6 +20,9 @@ class AudioBaseDataset(GenericSubdataset):
 
         self.sr = sr
 
+        self.student_information = self.validated_student_information()
+        self.student_ids = [str(x[0]) for x in self.student_information]
+
     def read_data_file(self, data_path, start=None, end=None, segment=None):
         return self.read_audio(data_path, start=start, end=end, segment=segment)
 
@@ -39,12 +42,23 @@ class AudioBaseDataset(GenericSubdataset):
 
     def _load_data_path(self):
 
+        found = 0
+
+
         for (sid, year, band) in self.student_information:
             audio_path = os.path.join(
                 self.data_root, str(year), band, "{}/{}.wav".format(sid, sid)
             )
 
-            self.data_path[str(sid)] = audio_path
+            if os.path.exists(audio_path):
+                found += 1
+                self.data_path[str(sid)] = audio_path
+
+        print(f"Requested {len(self.student_information)} students: {found} have usable audio.")
+
+    def validated_student_information(self):
+        return [x for x in self.student_information if str(x[0]) in self.data_path]
+            
 
 
 class AudioMelSpecDataset(AudioBaseDataset):
@@ -62,6 +76,8 @@ class AudioMelSpecDataset(AudioBaseDataset):
         self.n_fft = n_fft
         self.hop_length = hop_length
         self.n_mels = n_mels
+
+
 
     def read_data_file(self, data_path, start=None, end=None, segment=None):
         y = self.read_audio(data_path, start=start, end=end, segment=segment)

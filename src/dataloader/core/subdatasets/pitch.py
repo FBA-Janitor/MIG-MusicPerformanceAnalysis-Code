@@ -8,18 +8,22 @@ class PitchDataset(GenericSubdataset):
     def __init__(
         self,
         student_information: List[Tuple],
+        max_length_second=None,
         data_root="/media/fba/MIG-FBA-PitchTracking/cleaned/pitchtrack/bystudent",
         to_midi=True,
+        hop_size_second=256/44100,
     ) -> None:
         super().__init__(student_information=student_information, data_root=data_root)
 
         self.to_midi = to_midi
+        self.max_length_frames = int(np.ceil(max_length_second/hop_size_second) + 1) if max_length_second is not None else None
 
     def _load_data_path(self):
         """
         Overwrite this in the subclass
         Load the path to the data into self.path
         """
+        found = 0
 
         for (sid, year, band) in self.student_information:
 
@@ -27,7 +31,14 @@ class PitchDataset(GenericSubdataset):
                 self.data_root, str(year), band, f"{sid}/{sid}_pyin_pitchtrack.csv"
             )
 
-            self.data_path[str(sid)] = f0_path
+            if os.path.exists(f0_path):
+                found += 1
+                self.data_path[str(sid)] = f0_path
+
+        print(f"Requested {len(self.student_information)} students: {found} have usable pitch data.")
+
+    def validated_student_information(self):
+        return [x for x in self.student_information if str(x[0]) in self.data_path]
 
     def read_data_file(self, data_path, start, end, segment=None):
         """
@@ -54,11 +65,22 @@ class PitchDataset(GenericSubdataset):
         if end is not None:
             time_filt = time_filt & (time <= end)
 
-
-
         f0 = f0[time_filt]
 
-        return f0
+        if self.max_length_frames is not None:
+            nf0 = f0.shape[0]
+            if nf0 > self.max_length_frames:
+                raise ValueError(f"Length of f0 is {nf0}, which is longer than the maximum length {self.max_length_frames}")
+            f0pad = np.pad(f0, (0, self.max_length_frames - nf0), mode="constant", constant_values=np.nan).astype(np.float32)
+            masks = np.pad(np.ones_like(f0), (0, self.max_length_frames - nf0), mode="constant", constant_values=0).astype(bool)
+        else:
+            f0pad = f0.astype(np.float32)
+            masks = np.ones_like(f0, dtype=bool)
+
+        return {
+            "f0": f0pad,
+            "mask": masks,
+        }
 
 if __name__ == "__main__":
 

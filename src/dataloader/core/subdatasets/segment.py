@@ -31,13 +31,7 @@ class SegmentDataset(GenericSubdataset):
         algo_data_root : str = "/media/fba/MIG-FBA-Segmentation/cleaned/algo-segmentation/bystudent",
     ) -> None:
         self.algo_data_root = algo_data_root
-        super().__init__(student_information=student_information, data_root=data_root, preload_data_path=False)
-        self.data_path = {} 
-        self._load_data_path()
-        self.student_information = self.validated_student_information()
-        self.student_ids = [str(x[0]) for x in self.student_information]
-
-
+        super().__init__(student_information=student_information, data_root=data_root)
 
     def validated_student_information(self):
         return [x for x in self.student_information if str(x[0]) in self.data_path]
@@ -58,17 +52,19 @@ class SegmentDataset(GenericSubdataset):
 
         for (sid, year, band) in self.student_information:
 
-            if str(sid) == "30028":
-                verbose = True
-                print("Found 30028")
-
             segment_path = os.path.join(self.data_root, str(year), band, "{}/{}_seginst.csv".format(sid, sid))
             if os.path.exists(segment_path):
                 found += 1
             else:
-                if status[(year, band)][int(sid)] == SUCCESS:
+                if status[(year, band)].get(int(sid), None) == SUCCESS:
                     segment_path = os.path.join(self.algo_data_root, str(year), band, "{}/{}_seginst.csv".format(sid, sid))
-                    found += 1
+                    if os.path.exists(segment_path):
+                        found += 1
+                    else:
+                        not_found += 1
+                        if verbose:
+                            warnings.warn(f"No segment found for {sid}")
+                        continue
                 else:
                     not_found += 1
                     if verbose:
@@ -89,6 +85,13 @@ class SegmentDataset(GenericSubdataset):
         start = seg_df["Start"]
         end = seg_df["End"]
         return np.vstack([start, end]).T
+
+    def get_maximum_segment_length(self, segment_id):
+        lengths = []
+        for sid in self.student_ids:
+            start, end = self.get_item_by_student_id(sid)[segment_id]
+            lengths.append(end - start)
+        return np.max(lengths)
 
 if __name__ == "__main__":
     
