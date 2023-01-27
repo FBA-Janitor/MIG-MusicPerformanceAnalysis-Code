@@ -50,6 +50,7 @@ class PitchDataset(GenericSubdataset):
         
         time = df.Time.values.squeeze()
 
+        # this is a misnomer, it's actually in Hz
         f0 = df.MIDI.values.squeeze()
 
         f0[f0 == 0] = np.nan
