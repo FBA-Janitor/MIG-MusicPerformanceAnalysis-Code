@@ -8,7 +8,7 @@ The code is for generation of automatic segmentation and the segments will go in
 To generate segmentation, run
 
 ```
-python -m fire segment_wav.py segment_dir --input_dir <input_dir> --output_dir <output_dir>
+python segment_wav.py segment_dir --input_dir <input_dir> --output_dir <output_dir>
 ```
 
 The `input_dir` should be a directory containing audio pieces, and the folder structure will be `input_dir/stu_id/stu_id.mp3`. All the audio will be processed. You might want to change the temporay folder to save the feature and the model to use in [default config path](scripts/utils/default_configs_path.py).
@@ -16,7 +16,7 @@ The `input_dir` should be a directory containing audio pieces, and the folder st
 If the feature has already been extracted, you can also run
 
 ```
-python -m fire segment_wav.py segment_dir --input_dir <input_dir> --output_dir <output_dir> --from_feature True
+python segment_wav.py segment_dir --input_dir <input_dir> --output_dir <output_dir> --from_feature True
 ```
 
 The `input_dir` should be a directory containing extracted features, and the folder structure will be `input_dir/stu_id.npz`.
@@ -26,7 +26,7 @@ The `input_dir` should be a directory containing extracted features, and the fol
 To train a new SVM model, you should first generate the `csv` files of training data by running
 
 ```
-python -m fire generate_audio_segment.py generate_multi_year --output_dir <output_dir> --root_audio_dir <audio_dir> --root_segment_dir <segment_dir>
+python generate_audio_segment.py generate_multi_year --output_dir <output_dir> --root_audio_dir <audio_dir> --root_segment_dir <segment_dir>
 ```
 
 - `output_dir` is the directory to save the `csv` files
@@ -36,7 +36,7 @@ python -m fire generate_audio_segment.py generate_multi_year --output_dir <outpu
 Then to train the model, run
 
 ```
-python -m fire train_svm.py train_svm
+python fire train_svm.py train_svm
 ```
 
 You might want to change the training data, the segment status file, the temporary feature folder and the model save pth in [default config path](scripts/utils/default_configs_path.py)
