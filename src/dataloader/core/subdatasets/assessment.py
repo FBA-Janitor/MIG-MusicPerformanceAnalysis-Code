@@ -82,10 +82,13 @@ class AssessmentDataset(GenericSubdataset):
             .to_dict()["NormalizedScore"]
         )
 
+        out = dict(sorted(df.items()))
+
         if self.output_format == 'dict':
-            out = dict(sorted(df.items()))
+            return out  #musicality, note, rhythm, tone
         elif self.output_format == 'array':
-            out = np.array(list(df.values())).astype(np.float32)
+            # print(out.keys())
+            return np.array(list(out.values())).astype(np.float32)
         else:
             raise NotImplementedError
 
