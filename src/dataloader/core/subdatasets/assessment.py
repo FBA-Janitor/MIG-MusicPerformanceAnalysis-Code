@@ -1,4 +1,6 @@
 import os
+
+from ..types.segment import SegmentType
 from . import GenericSubdataset
 from typing import List, Tuple
 import pandas as pd
@@ -9,16 +11,18 @@ class AssessmentDataset(GenericSubdataset):
     def __init__(
         self,
         student_information: List[Tuple],
+        segment: SegmentType,
         data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/assessment/summary",
         use_normalized=True,
-        output_format='array'
+        output_format="array",
     ) -> None:
         assert use_normalized, "Only normalized data is available."
         self.use_normalized = use_normalized
-        super().__init__(student_information=student_information, data_root=data_root)
-        
+        self.segment = segment
+
         self.output_format = output_format
-        
+
+        super().__init__(student_information=student_information, data_root=data_root)
 
     def _load_data_path(self):
         """
@@ -50,7 +54,36 @@ class AssessmentDataset(GenericSubdataset):
         print("Assessment data loaded.", self.data_csv.keys())
 
     def validated_student_information(self):
-        return self.student_information
+
+        validated_student_information = []
+
+        for year, band in self.year_band:
+            df = self.data_csv[(year, band)].copy()
+            df = df[
+                df["ScoreGroup"].apply(lambda s: s.replace(" ", "") == self.segment)
+            ]
+
+            df["Student"] = df["Student"].astype(int)
+
+            score_count = df.value_counts("Student")
+            # TODO: adjust this based on segment
+            if self.segment not in ["TechnicalEtude", "LyricalEtude"]:
+                raise NotImplementedError
+            student_ids_in_df = score_count[score_count == 4].index.tolist()
+            student_ids_in_info = [
+                int(sid)
+                for sid, y, b in self.student_information
+                if y == year and b == band
+            ]
+            common_student_ids = set(student_ids_in_df).intersection(
+                set(student_ids_in_info)
+            )
+
+            validated_student_information.extend(
+                [(sid, year, band) for sid in common_student_ids]
+            )
+
+        return validated_student_information
 
     def get_item_by_student_id(self, sid, start=None, end=None, segment=None):
         return self.read_data_file(
@@ -84,9 +117,9 @@ class AssessmentDataset(GenericSubdataset):
 
         out = dict(sorted(df.items()))
 
-        if self.output_format == 'dict':
-            return out  #musicality, note, rhythm, tone
-        elif self.output_format == 'array':
+        if self.output_format == "dict":
+            return out  # musicality, note, rhythm, tone
+        elif self.output_format == "array":
             # print(out.keys())
             return np.array(list(out.values())).astype(np.float32)
         else:

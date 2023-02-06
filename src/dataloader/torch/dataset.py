@@ -17,7 +17,11 @@ class FBADataset(data.Dataset):
         )
 
     def __getitem__(self, index):
-        return self.dataset.get_item_by_index(index)
+        item = self.dataset.get_item_by_index(index)
+        # print({
+        #     key: value.shape for key, value in item.items() if "shape" in dir(value)
+        # })
+        return item
 
     def __len__(self):
         return self.dataset.length

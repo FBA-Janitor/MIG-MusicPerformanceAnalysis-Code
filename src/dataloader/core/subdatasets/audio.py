@@ -16,12 +16,10 @@ class AudioBaseDataset(GenericSubdataset):
         data_root: str,
         sr=22050,
     ) -> None:
-        super().__init__(student_information=student_information, data_root=data_root)
+        
 
         self.sr = sr
-
-        self.student_information = self.validated_student_information()
-        self.student_ids = [str(x[0]) for x in self.student_information]
+        super().__init__(student_information=student_information, data_root=data_root)
 
     def read_data_file(self, data_path, start=None, end=None, segment=None):
         return self.read_audio(data_path, start=start, end=end, segment=segment)

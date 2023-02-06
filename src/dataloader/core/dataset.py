@@ -60,9 +60,9 @@ class FBADataset(GenericDataset):
 
         if use_assessment:
             self.subdatasets["assessment"] = AssessmentDataset(
-                self.student_information, data_root=assessment_data_root
+                self.student_information, data_root=assessment_data_root, segment=segment
             )
-            # self.student_information = self.subdatasets["assessment"].student_information
+            self.student_information = self.subdatasets["assessment"].student_information
 
         
         self.student_ids = [
@@ -81,7 +81,7 @@ class FBADataset(GenericDataset):
             for key, dataset in self.subdatasets.items()
         }
         data["student_id"] = int(sid)
-        data["year"] = self.student_information[self.student_ids.index(sid)][1]
+        data["year"] = int(self.student_information[self.student_ids.index(sid)][1])
 
         if self.conditions is not None:
             data["condition"] = self.get_conditions(data)
