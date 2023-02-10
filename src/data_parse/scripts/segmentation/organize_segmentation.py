@@ -65,7 +65,7 @@ def read_pyin(pyin_path, correct_timestamp=True, k=7):
 
     content = re.sub(",", "\t", content)
 
-    df = pd.read_table(StringIO(content), names=["Time", "MIDI"])
+    df = pd.read_table(StringIO(content), names=["time", "frequency"])
 
     if correct_timestamp:
         t = df["Time"].to_numpy()
