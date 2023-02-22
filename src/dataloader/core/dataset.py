@@ -8,7 +8,7 @@ from .subdatasets.pitch import PitchDataset
 from .subdatasets.assessment import AssessmentDataset
 from . import GenericDataset
 from .types import SegmentType, WindSegmentEnum
-
+import numpy as np
 
 class FBADataset(GenericDataset):
     def __init__(
@@ -25,6 +25,7 @@ class FBADataset(GenericDataset):
         feature_data_root="/media/fba/tmp_audio_feature",
         segment_data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/segmentation/bystudent",
         algosegment_data_root="/media/fba/MIG-FBA-Segmentation/cleaned/algo-segmentation/bystudent",
+        conditions=None
     ) -> None:
         super().__init__()
 
@@ -59,15 +60,17 @@ class FBADataset(GenericDataset):
 
         if use_assessment:
             self.subdatasets["assessment"] = AssessmentDataset(
-                self.student_information, data_root=assessment_data_root
+                self.student_information, data_root=assessment_data_root, segment=segment
             )
-            # self.student_information = self.subdatasets["assessment"].student_information
+            self.student_information = self.subdatasets["assessment"].student_information
 
         
         self.student_ids = [
             student_id for student_id, _, _ in self.student_information
         ]
         self.length = len(self.student_information)
+
+        self.conditions = conditions
 
     def get_item_by_student_id(self, sid):
 
@@ -77,11 +80,30 @@ class FBADataset(GenericDataset):
             key: dataset.get_item_by_student_id(sid, start, end, self.segment_name)
             for key, dataset in self.subdatasets.items()
         }
-        # data["student_id"] = int(sid)
+        data["student_id"] = int(sid)
+        data["year"] = int(self.student_information[self.student_ids.index(sid)][1])
 
-        # print({key: value.shape for key, value in data.items()})
+        if self.conditions is not None:
+            data["condition"] = self.get_conditions(data)
 
         return data
+
+    def get_conditions(self, data):
+        cvecs = []
+        for c in self.conditions:
+            cvec = self.get_condition(data[c], c)
+            cvecs.append(cvec)
+        return np.concatenate(cvecs)
+    
+    def get_condition(self, cval, ctype):
+        if ctype == "year":
+            N_YEARS = 6
+            FIRST_YEAR = 2013
+            cvec = np.zeros(N_YEARS, dtype=np.float32)
+            cvec[int(cval) - FIRST_YEAR] = 1
+            return cvec
+        else:
+            raise NotImplementedError
 
     def get_item_by_index(self, idx):
         return self.get_item_by_student_id(self.student_ids[idx])

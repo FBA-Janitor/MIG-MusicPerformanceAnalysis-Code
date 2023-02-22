@@ -44,10 +44,12 @@ class SegmentDataset(GenericSubdataset):
 
         yearbands = set([(year, band) for sid, year, band in self.student_information])
         status = {}
-        for year, band in yearbands:
-            algo_report = os.path.join(self.algo_data_root, "../summary", f"report_{year}_{band}.csv")
-            dfr = pd.read_csv(algo_report)
-            status[(year, band)] = dfr.set_index("StudentID").to_dict()["Status"]
+
+        if self.algo_data_root is not None:
+            for year, band in yearbands:
+                algo_report = os.path.join(self.algo_data_root, "../summary", f"report_{year}_{band}.csv")
+                dfr = pd.read_csv(algo_report)
+                status[(year, band)] = dfr.set_index("StudentID").to_dict()["Status"]
             # pprint(status[(year, band)])
 
         for (sid, year, band) in self.student_information:
@@ -56,19 +58,22 @@ class SegmentDataset(GenericSubdataset):
             if os.path.exists(segment_path):
                 found += 1
             else:
-                if status[(year, band)].get(int(sid), None) == SUCCESS:
-                    segment_path = os.path.join(self.algo_data_root, str(year), band, "{}/{}_seginst.csv".format(sid, sid))
-                    if os.path.exists(segment_path):
-                        found += 1
+                if self.algo_data_root is not None:
+                    if status[(year, band)].get(int(sid), None) == SUCCESS:
+                        segment_path = os.path.join(self.algo_data_root, str(year), band, "{}/{}_seginst.csv".format(sid, sid))
+                        if os.path.exists(segment_path):
+                            found += 1
+                        else:
+                            not_found += 1
+                            if verbose:
+                                warnings.warn(f"No segment found for {sid}")
+                            continue
                     else:
                         not_found += 1
                         if verbose:
                             warnings.warn(f"No segment found for {sid}")
                         continue
                 else:
-                    not_found += 1
-                    if verbose:
-                        warnings.warn(f"No segment found for {sid}")
                     continue
 
             self.data_path[str(sid)] = segment_path
@@ -77,8 +82,6 @@ class SegmentDataset(GenericSubdataset):
             verbose = False
 
         print(f"Requested {requested} students: {found} have usable segmentation; {not_found} do not.")
-
-    
 
     def read_data_file(self, segment_path, **kwargs):
         seg_df = pd.read_csv(segment_path)

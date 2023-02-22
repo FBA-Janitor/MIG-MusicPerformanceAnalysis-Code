@@ -13,9 +13,9 @@ class FBADataModule(pl.LightningDataModule):
         year_band_inst: List[Tuple[int, str, str]],
         dataset_kwargs: Dict,
         batch_size: int = 32,
-        num_workers: int = 4,
+        num_workers: int = 2,
         shuffle_train: bool = True,
-        shuffle_val: bool = False,
+        shuffle_val: bool = True,
         split_path="/media/fba/MIG-MusicPerformanceAnalysis-Code/src/split",
         verbose=False,
     ) -> None:
@@ -65,6 +65,7 @@ class FBADataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             shuffle=self.shuffle_train,
             num_workers=self.num_workers,
+            drop_last=True,
         )
 
     def val_dataloader(self):
@@ -73,6 +74,7 @@ class FBADataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             shuffle=self.shuffle_val,
             num_workers=self.num_workers,
+            drop_last=True,
         )
 
 
