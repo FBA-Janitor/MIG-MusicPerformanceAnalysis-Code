@@ -118,9 +118,9 @@ class PitchDataset(GenericSubdataset):
 
         f0 = f0[time_filt]
         confidence = confidence[time_filt]
-        bool_masks = bool_masks[time_filt]
+        masks = bool_masks[time_filt]
 
-        if self.max_length_frames is not None:
+        if self.max_length_frames is not None and f0.shape[0] < self.max_length_frames:
             nf0 = f0.shape[0]
             if nf0 > self.max_length_frames:
                 raise ValueError(
@@ -136,7 +136,7 @@ class PitchDataset(GenericSubdataset):
                 )
 
             f0 = pad(f0)
-            masks = pad(bool_masks)
+            masks = pad(masks)
             confidence = pad(confidence)
         else:
             pass

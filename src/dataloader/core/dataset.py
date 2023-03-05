@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, List, Tuple
 
 from .subdatasets import GenericSubdataset
 from .subdatasets.segment import SegmentDataset
-from .subdatasets.audio import AudioBaseDataset, AudioMelSpecDataset
+from .subdatasets.audio import AudioDataset
 from .subdatasets.pitch import PitchDataset
 from .subdatasets.assessment import AssessmentDataset
 from . import GenericDataset
@@ -13,20 +13,37 @@ import numpy as np
 class FBADataset(GenericDataset):
     def __init__(
         self,
-        student_information,
+        student_information: List[Tuple[int, int, str]],
         segment: SegmentType,
-        use_audio=True,
-        use_f0=True,
-        use_assessment=True,
-        config_root="/media/fba/MIG-MusicPerformanceAnalysis-Code/src/data_parse/config",
-        assessment_data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/assessment/summary",
-        audio_data_root="/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent",
-        f0_data_root="/media/fba/MIG-FBA-PitchTracking/cleaned/pitchtrack/bystudent",
-        feature_data_root="/media/fba/tmp_audio_feature",
-        segment_data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/segmentation/bystudent",
-        algosegment_data_root="/media/fba/MIG-FBA-Segmentation/cleaned/algo-segmentation/bystudent",
+        use_audio: bool = True,
+        use_f0: bool = True,
+        use_assessment: bool = True,
+        chunk_size: float = -1.,
+        assessment_data_root: str = "/media/fba/MIG-FBA-Data-Cleaning/cleaned/assessment/summary",
+        audio_data_root: str = "/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent",
+        f0_data_root: str = "/media/fba/MIG-FBA-PitchTracking/cleaned/pitchtrack/bystudent",
+        segment_data_root: str = "/media/fba/MIG-FBA-Data-Cleaning/cleaned/segmentation/bystudent",
+        algosegment_data_root: str = "/media/fba/MIG-FBA-Segmentation/cleaned/algo-segmentation/bystudent",
         conditions=None
     ) -> None:
+        """
+        FBA Dataset
+
+        Parameters
+        ----------
+        student_information: List[Tuple[int, int, str]]
+            a list of (student_id, year, band) tuples
+        segment: SegmentType
+            type of segment to use, please use "TechnicalEtude" now
+        use_audio: bool
+            whether to use audio, by default True
+        use_f0: bool
+            whether to use pitch contour, by default True
+        use_assessment: bool
+            whether to use assessment scores, by defaut True
+        chunk_size: float
+            chunk size in seconds, if larger than zero, then randomly chunk the data, otherwise load the full data
+        """
         super().__init__()
 
         self.student_information = sorted(student_information, key=lambda x: x[0])
@@ -40,13 +57,18 @@ class FBADataset(GenericDataset):
             self.student_information, data_root=segment_data_root, algo_data_root=algosegment_data_root
         )
 
+        self.chunk_size = chunk_size
         self.max_length = self.segment_ds.get_maximum_segment_length(self.segment_id)
         print(f"Maximum length of segment {self.segment_name} is {self.max_length} seconds.")
+        if self.chunk_size > 0:
+            print(f"Using chunk size of  {self.chunk_size}s!")
+        else:
+            print(f"Chunk size less than 0. Using the full audio!")
 
         self.student_information = self.segment_ds.student_information
 
         if use_audio:
-            self.subdatasets["audio"] = AudioMelSpecDataset(
+            self.subdatasets["audio"] = AudioDataset(
                 self.student_information,
                 data_root=audio_data_root,
             )
@@ -54,7 +76,7 @@ class FBADataset(GenericDataset):
 
         if use_f0:
             self.subdatasets["f0"] = PitchDataset(
-                self.student_information, data_root=f0_data_root, to_midi=True, max_length_second=self.max_length
+                self.student_information, data_root=f0_data_root, to_midi=True, max_length_second=self.max_length if self.chunk_size < 0 else self.chunk_size
             )
             self.student_information = self.subdatasets["f0"].student_information
 
@@ -75,6 +97,9 @@ class FBADataset(GenericDataset):
     def get_item_by_student_id(self, sid):
 
         start, end = self.segment_ds.get_item_by_student_id(sid)[self.segment_id]
+        if self.chunk_size > 0 and end - start > self.chunk_size:
+            start = np.random.uniform(low=start, high=end-self.chunk_size)
+            end = start + self.chunk_size
 
         data = {
             key: dataset.get_item_by_student_id(sid, start, end, self.segment_name)
