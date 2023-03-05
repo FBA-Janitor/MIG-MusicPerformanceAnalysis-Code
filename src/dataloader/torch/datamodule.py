@@ -16,6 +16,10 @@ class FBADataModule(pl.LightningDataModule):
         num_workers: int = 2,
         shuffle_train: bool = True,
         shuffle_val: bool = True,
+        shuffle_test: bool = True,
+        train_key: str = "train",
+        val_key: str = "val",
+        test_key: str = "test",
         split_path="/media/fba/MIG-MusicPerformanceAnalysis-Code/src/split",
         verbose=False,
     ) -> None:
@@ -27,13 +31,15 @@ class FBADataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.shuffle_train = shuffle_train
         self.shuffle_val = shuffle_val
+        self.shuffle_test = shuffle_test
 
         self.dataset_kwargs = dataset_kwargs
 
         self.verbose = verbose
 
-        self.train_info = self.get_split_ids("train", year_band_inst)
-        self.val_info = self.get_split_ids("valtest", year_band_inst)
+        self.train_info = self.get_split_ids(train_key, year_band_inst)
+        self.val_info = self.get_split_ids(val_key, year_band_inst)
+        self.test_info = self.get_split_ids(test_key, year_band_inst)
 
     def get_split_ids(self, split, year_band_inst: List[Tuple[int, str, str]]):
         ids = []
@@ -53,9 +59,7 @@ class FBADataModule(pl.LightningDataModule):
                 continue
 
             id = np.load(load_path)
-            ids.append([(idx, y, b) for idx in id])
-
-        ids = np.concatenate(ids)
+            ids.extend([(idx, y, b) for idx in id])
 
         return ids
 
@@ -71,6 +75,15 @@ class FBADataModule(pl.LightningDataModule):
     def val_dataloader(self):
         return DataLoader(
             FBADataset(self.val_info, self.dataset_kwargs),
+            batch_size=self.batch_size,
+            shuffle=self.shuffle_val,
+            num_workers=self.num_workers,
+            drop_last=True,
+        )
+
+    def test_dataloader(self):
+        return DataLoader(
+            FBADataset(self.test_info, self.dataset_kwargs),
             batch_size=self.batch_size,
             shuffle=self.shuffle_val,
             num_workers=self.num_workers,
