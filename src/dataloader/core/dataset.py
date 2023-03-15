@@ -19,6 +19,7 @@ class FBADataset(GenericDataset):
         use_f0: bool = True,
         use_assessment: bool = True,
         chunk_size: float = -1.,
+        audio_sr: float = 44100,
         assessment_data_root: str = "/media/fba/MIG-FBA-Data-Cleaning/cleaned/assessment/summary",
         audio_data_root: str = "/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent",
         f0_data_root: str = "/media/fba/MIG-FBA-PitchTracking/cleaned/pitchtrack/bystudent",
@@ -71,6 +72,8 @@ class FBADataset(GenericDataset):
             self.subdatasets["audio"] = AudioDataset(
                 self.student_information,
                 data_root=audio_data_root,
+                sr=audio_sr,
+                chunk_size=chunk_size
             )
             self.student_information = self.subdatasets["audio"].student_information
 

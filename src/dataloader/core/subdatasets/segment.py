@@ -74,6 +74,8 @@ class SegmentDataset(GenericSubdataset):
                             warnings.warn(f"No segment found for {sid}")
                         continue
                 else:
+                    # continue
+                    not_found += 1
                     continue
 
             self.data_path[str(sid)] = segment_path

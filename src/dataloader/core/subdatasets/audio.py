@@ -13,20 +13,32 @@ class AudioDataset(GenericSubdataset):
         self,
         student_information: List[Tuple],
         data_root: str,
-        sr=22050,
+        sr=44100,
+        chunk_size=-1,
     ) -> None:
         
 
         self.sr = sr
+        self.chunk_size = chunk_size
         super().__init__(student_information=student_information, data_root=data_root)
 
     def read_data_file(self, data_path, start=None, end=None, segment=None):
         return self.read_audio(data_path, start=start, end=end, segment=segment)
 
     def read_audio(self, data_path, start, end, segment=None):
-                
-        y, _ = librosa.load(data_path, sr=self.sr, offset=start, duration=end-start)
+        if self.chunk_size > 0:
+            return self.read_chunk(data_path, start, end, segment)
 
+    def read_chunk(self, data_path, start, end, segment=None):
+        target_length = np.round(self.chunk_size * self.sr).astype(np.int32)
+        try:
+            y, _ = librosa.load(data_path, sr=self.sr, offset=start, duration=end-start)
+        except Exception:
+            y, _ = librosa.load(data_path, sr=self.sr, offset=start)
+        if len(y) < target_length:
+            y = np.pad(y, (0, target_length - len(y)))
+        else:
+            y = y[:target_length]
         return y
 
     def _load_data_path(self):
