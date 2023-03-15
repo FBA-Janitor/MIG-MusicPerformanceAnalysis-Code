@@ -35,6 +35,8 @@ class FBADataModule(pl.LightningDataModule):
         self.train_info = self.get_split_ids("train", year_band_inst)
         self.val_info = self.get_split_ids("valtest", year_band_inst)
 
+        # np.savez("/data/kwatchar3/fba/ProbabilisticMPA/split_info.npz", train=self.train_info, val=self.val_info)
+
     def get_split_ids(self, split, year_band_inst: List[Tuple[int, str, str]]):
         ids = []
 
