@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 from typing import Dict, List, Tuple, Optional
 import warnings
 import pytorch_lightning as pl
@@ -82,9 +83,11 @@ class FBADataModule(pl.LightningDataModule):
         )
 
     def test_dataloader(self):
+        test_kwargs = deepcopy(self.dataset_kwargs)
+        test_kwargs["chunk_size"] = -1.0
         return DataLoader(
-            FBADataset(self.test_info, self.dataset_kwargs),
-            batch_size=self.batch_size,
+            FBADataset(self.test_info, test_kwargs),
+            batch_size=1,
             shuffle=self.shuffle_val,
             num_workers=self.num_workers,
             drop_last=True,

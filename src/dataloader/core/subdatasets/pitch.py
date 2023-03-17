@@ -9,13 +9,15 @@ class PitchDataset(GenericSubdataset):
     def __init__(
         self,
         student_information: List[Tuple],
-        max_length_second=None,
+        target_length_second=None,
         data_root="/media/fba/MIG-FBA-PitchTracking/cleaned/pitchtrack/bystudent",
         to_midi=True,
+        normalize_mean=36,
+        normalize_std=72,
         hop_size_second=None,
         oldheader=None,
         filename_format=None,
-        confidence_thresh=0.0,
+        confidence_thresh=-1.0,
     ) -> None:
         
         if oldheader is None:
@@ -50,11 +52,16 @@ class PitchDataset(GenericSubdataset):
                 hop_size_second = 10 * 1e-3 # 10 milliseconds
             else:
                 raise ValueError("Cannot determine hop_size_second from data_root")
-        self.max_length_frames = (
-            int(np.ceil(max_length_second / hop_size_second) + 1)
-            if max_length_second is not None
+        
+        self.target_length_second = target_length_second
+        self.target_length_frames = (
+            int(np.ceil(target_length_second / hop_size_second) + 1)
+            if target_length_second is not None
             else None
         )
+        
+        self.normalize_mean = normalize_mean if normalize_mean is not None else 0.0
+        self.normalize_std = normalize_std if normalize_std is not None else 1.0
 
         super().__init__(student_information=student_information, data_root=data_root)
 
@@ -103,10 +110,12 @@ class PitchDataset(GenericSubdataset):
             confidence = df["confidence"].values.squeeze()
             bool_masks = (confidence > self.confidence_thresh)
 
-        f0[~bool_masks] = np.nan
+        # f0[~bool_masks] = np.nan
 
         if self.to_midi:
-            f0 = np.log2(f0 / 440) * 12 + 69
+            # f0 = np.log2(f0 / 440) * 12 + 69
+            f0[f0 != 0] = 69 + 12 * np.log2(f0[f0 != 0] / 440)
+            f0[f0 != 0] = (f0[f0 != 0] - self.normalize_mean) / self.normalize_std
 
         if start is not None:
             time_filt = time >= start
@@ -120,11 +129,11 @@ class PitchDataset(GenericSubdataset):
         confidence = confidence[time_filt]
         masks = bool_masks[time_filt]
 
-        if self.max_length_frames is not None and f0.shape[0] < self.max_length_frames:
+        if self.target_length_frames is not None and f0.shape[0] != self.target_length_frames:
             nf0 = f0.shape[0]
             if nf0 > self.max_length_frames:
                 raise ValueError(
-                    f"Length of f0 is {nf0}, which is longer than the maximum length {self.max_length_frames}"
+                    f"Length of f0 is {nf0}, which is longer than the maximum length {self.target_length_frames}"
                 )
 
             def pad(x):
@@ -141,7 +150,7 @@ class PitchDataset(GenericSubdataset):
         else:
             pass
 
-        f0 = np.nan_to_num(f0, nan=0.0, posinf=128.0, neginf=0.0)
+        # f0 = np.nan_to_num(f0, nan=0.0, posinf=128.0, neginf=0.0)
 
         return {
             "f0": f0.astype(np.float32),

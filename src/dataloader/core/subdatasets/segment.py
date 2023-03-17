@@ -91,12 +91,12 @@ class SegmentDataset(GenericSubdataset):
         end = seg_df["End"]
         return np.vstack([start, end]).T
 
-    def get_maximum_segment_length(self, segment_id):
+    def get_minimum_maximum_segment_length(self, segment_id):
         lengths = []
         for sid in self.student_ids:
             start, end = self.get_item_by_student_id(sid)[segment_id]
             lengths.append(end - start)
-        return np.max(lengths)
+        return np.min(lengths), np.max(lengths)
 
 if __name__ == "__main__":
     

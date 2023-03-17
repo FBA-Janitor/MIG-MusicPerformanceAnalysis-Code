@@ -59,7 +59,8 @@ class FBADataset(GenericDataset):
         )
 
         self.chunk_size = chunk_size
-        self.max_length = self.segment_ds.get_maximum_segment_length(self.segment_id)
+        self.min_length, self.max_length = self.segment_ds.get_minimum_maximum_segment_length(self.segment_id)
+        print(f"Minimum length of segment {self.segment_name} is {self.min_length} seconds.")
         print(f"Maximum length of segment {self.segment_name} is {self.max_length} seconds.")
         if self.chunk_size > 0:
             print(f"Using chunk size of  {self.chunk_size}s!")
@@ -79,7 +80,12 @@ class FBADataset(GenericDataset):
 
         if use_f0:
             self.subdatasets["f0"] = PitchDataset(
-                self.student_information, data_root=f0_data_root, to_midi=True, max_length_second=self.max_length if self.chunk_size < 0 else self.chunk_size
+                self.student_information,
+                data_root=f0_data_root,
+                target_length_second=self.chunk_size,
+                to_midi=True,
+                normalize_mean=36,
+                normalize_std=72
             )
             self.student_information = self.subdatasets["f0"].student_information
 
