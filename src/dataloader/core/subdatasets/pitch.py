@@ -53,10 +53,10 @@ class PitchDataset(GenericSubdataset):
             else:
                 raise ValueError("Cannot determine hop_size_second from data_root")
         
-        self.target_length_second = target_length_second
+        self.target_length_second = target_length_second if (target_length_second is not None and target_length_second > 0) else None
         self.target_length_frames = (
-            int(np.ceil(target_length_second / hop_size_second) + 1)
-            if target_length_second is not None
+            int(np.ceil(self.target_length_second / hop_size_second) + 1)
+            if self.target_length_second is not None
             else None
         )
         
@@ -131,7 +131,7 @@ class PitchDataset(GenericSubdataset):
 
         if self.target_length_frames is not None and f0.shape[0] != self.target_length_frames:
             nf0 = f0.shape[0]
-            if nf0 > self.max_length_frames:
+            if nf0 > self.target_length_frames:
                 raise ValueError(
                     f"Length of f0 is {nf0}, which is longer than the maximum length {self.target_length_frames}"
                 )
@@ -139,7 +139,7 @@ class PitchDataset(GenericSubdataset):
             def pad(x):
                 return np.pad(
                     x,
-                    (0, self.max_length_frames - nf0),
+                    (0, self.target_length_frames - nf0),
                     mode="constant",
                     constant_values=0.0,
                 )
