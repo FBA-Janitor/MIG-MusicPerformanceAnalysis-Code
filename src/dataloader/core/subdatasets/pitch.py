@@ -22,18 +22,18 @@ class PitchDataset(GenericSubdataset):
             if "pitchtrack/bystudent" in data_root:
                 # old style header ("MIDI" instead of "freq" even though it's in Hz)
                 oldheader = True
-            elif "pitchtrack3/bystudent" in data_root:
+            else:
                 # new style header
                 oldheader = False
-            else:
-                raise ValueError("Cannot determine header from data_root")
 
         self.oldheader = oldheader
 
         if filename_format is None:
             if "pitchtrack/bystudent" in data_root:
                 filename_format = "{sid}_pyin_pitchtrack.csv"
-            elif "pitchtrack3/bystudent" in data_root:
+            elif "pitchtrack_resampled/bystudent" in data_root:
+                filename_format = "{sid}_pyin_pitchtrack_resampled.csv"
+            elif "pitchtrack3/bystudent" in data_root or "pitchtrack3-limit/bystudent" in data_root or "pitchtrack5/bystudent" in data_root:
                 filename_format = "{sid}.f0.csv"
             else:
                 raise ValueError("Cannot determine filename_format from data_root")
@@ -44,9 +44,9 @@ class PitchDataset(GenericSubdataset):
 
         self.to_midi = to_midi
         if hop_size_second is None:
-            if "pitchtrack/bystudent" in data_root:
+            if "pitchtrack/bystudent" in data_root or "pitchtrack5/bystudent" in data_root:
                 hop_size_second = 256 / 44100 # approx 5.8 milliseconds
-            elif "pitchtrack3/bystudent" in data_root:
+            elif "pitchtrack3/bystudent" in data_root or "pitchtrack_resampled/bystudent" in data_root or "pitchtrack3-limit/bystudent" in data_root:
                 hop_size_second = 10 * 1e-3 # 10 milliseconds
             else:
                 raise ValueError("Cannot determine hop_size_second from data_root")
@@ -87,7 +87,7 @@ class PitchDataset(GenericSubdataset):
         Overwrite this in the subclass
         Read the data by the path
         """
-
+        
         df = pd.read_csv(data_path)
 
         if self.oldheader:
@@ -96,7 +96,7 @@ class PitchDataset(GenericSubdataset):
         time = df["time"].values.squeeze()
         f0 = df["frequency"].values.squeeze()
 
-        if self.oldheader:
+        if "confidence" not in df.columns:
             confidence = np.ones_like(f0)
             bool_masks = (f0 != 0)
         else:
@@ -106,6 +106,7 @@ class PitchDataset(GenericSubdataset):
         f0[~bool_masks] = np.nan
 
         if self.to_midi:
+            f0[f0 <= 0] = np.nan
             f0 = np.log2(f0 / 440) * 12 + 69
 
         if start is not None:
