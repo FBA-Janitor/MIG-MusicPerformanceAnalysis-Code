@@ -8,6 +8,7 @@ BassoonType = Literal["Bassoon", "Contrabassoon"]
 DoubleReedType = Union[OboeType, BassoonType]
 
 UpperClarinetsType = Literal["Eb Clarinet", "Bb Clarinet"]
+BbClarinetType = Literal["Bb Clarinet"]
 LowerClarinetsType = Literal[
     "Eb Contra Alto Clarinet", "Bass Clarinet", "Bb Contrabass Clarinet"
 ]

@@ -7,18 +7,44 @@ import pandas as pd
 import numpy as np
 
 
+def abbreviate_description(description):
+
+    description = description.lower()
+
+    if "rhythm" in description:
+        return "rhythm_accuracy"
+    
+    if "note" in description:
+        return "note_accuracy"
+    
+    if "musicality" in description or "tempo" in description or "style" in description:
+        return "musicality"
+    
+    if "tone" in description or "quality" in description:
+        return "tone"
+    
+    raise ValueError(f"Unknown description {description}")
+
+
+
 class AssessmentDataset(GenericSubdataset):
     def __init__(
         self,
         student_information: List[Tuple],
         segment: SegmentType,
         data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/assessment/summary",
+        assessments=None,
         use_normalized=True,
         output_format="array",
     ) -> None:
         assert use_normalized, "Only normalized data is available."
         self.use_normalized = use_normalized
         self.segment = segment
+
+        if assessments is None:
+            assessments = sorted(["musicality", "note", "rhythm", "tone"])
+
+        self.assessments = assessments
 
         self.output_format = output_format
 
@@ -111,17 +137,27 @@ class AssessmentDataset(GenericSubdataset):
                 & df["ScoreGroup"].apply(lambda s: s.replace(" ", "") == segment)
             ][["Description", "NormalizedScore"]]
             .reset_index(drop=True)
-            .set_index("Description")
+        )
+
+        # print(df.keys())
+
+        df["Description"] = df["Description"].apply(abbreviate_description)
+
+        df = (
+            df.set_index("Description")
             .to_dict()["NormalizedScore"]
         )
 
-        out = dict(sorted(df.items()))
+        out = {
+            description: df[description]
+            for description in self.assessments
+        }
 
         if self.output_format == "dict":
             return out  # musicality, note, rhythm, tone
         elif self.output_format == "array":
             # print(out.keys())
-            return np.array(list(out.values())).astype(np.float32)
+            return np.array([out[k] for k in self.assessments]).astype(np.float32)
         else:
             raise NotImplementedError
 

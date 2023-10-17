@@ -101,6 +101,8 @@ def process_symphonic_clarinet(
         for sid, year, band in np.concatenate([train, val], axis=0)
     ]
 
+    wav_paths = [w for w in wav_paths if os.path.exists(w)]
+
     # print(wav_paths)
     # wav_paths = sorted(glob.glob(audio_root + "/**/*.wav", recursive=True))
 
@@ -110,6 +112,8 @@ def process_symphonic_clarinet(
 
     for w in tqdm(wav_paths):
         outpath = os.path.dirname(w.replace(audio_root, f0_root))
+        if os.path.exists(outpath):
+            continue
         os.makedirs(outpath, exist_ok=True)
         process_file(model, w, outpath, viterbi=smooth, step_size=256 / 44100 * 1000)
 

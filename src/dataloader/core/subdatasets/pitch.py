@@ -137,6 +137,7 @@ class PitchDataset(GenericSubdataset):
 
             f0 = pad(f0)
             masks = pad(bool_masks)
+            pad_masks = pad(np.ones_like(bool_masks))
             confidence = pad(confidence)
         else:
             pass
@@ -146,6 +147,7 @@ class PitchDataset(GenericSubdataset):
         return {
             "f0": f0.astype(np.float32),
             "mask": masks,
+            "pad_mask": pad_masks,
             "confidence": confidence.astype(np.float32),
         }
 

@@ -18,6 +18,7 @@ class FBADataset(GenericDataset):
         use_audio=True,
         use_f0=True,
         use_assessment=True,
+        assessments=None,
         config_root="/media/fba/MIG-MusicPerformanceAnalysis-Code/src/data_parse/config",
         assessment_data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/assessment/summary",
         audio_data_root="/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent",
@@ -59,8 +60,12 @@ class FBADataset(GenericDataset):
             self.student_information = self.subdatasets["f0"].student_information
 
         if use_assessment:
+
+            if assessments is None:
+                assessments = ["musicality", "rhythm", "note", "tone"]
+
             self.subdatasets["assessment"] = AssessmentDataset(
-                self.student_information, data_root=assessment_data_root, segment=segment
+                self.student_information, data_root=assessment_data_root, segment=segment, assessments=assessments
             )
             self.student_information = self.subdatasets["assessment"].student_information
 
