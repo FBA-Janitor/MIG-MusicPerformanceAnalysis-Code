@@ -84,3 +84,14 @@ assessment_scores:
         ./fba-canonical/audio/2018-2019/FBA All-State Symphonic Band 11th 12th
         Grade 2018-2019.xlsx
       sheet: Raw Data
+  2021:
+    concert:
+      excel: ./fba-canonical/audio/2021-2022/FBA All-State Concert Band 2021-2022.xlsx
+      sheet: Sheet1
+    middle:
+      excel: ./fba-canonical/audio/2021-2022/FBA Middle School Band 2021-2022.xlsx
+      sheet: Raw Data
+    symphonic:
+      excel:
+        ./fba-canonical/audio/2021-2022/FBA All-State Symphonic Band 2021-2022.xlsx
+      sheet: Sheet1
