@@ -1,4 +1,6 @@
 import os
+
+import scipy.signal
 from . import GenericSubdataset
 from typing import List, Tuple
 import pandas as pd
@@ -16,6 +18,7 @@ class PitchDataset(GenericSubdataset):
         oldheader=None,
         filename_format=None,
         confidence_thresh=0.0,
+        augment=False,
     ) -> None:
         
         if oldheader is None:
@@ -50,11 +53,17 @@ class PitchDataset(GenericSubdataset):
                 hop_size_second = 10 * 1e-3 # 10 milliseconds
             else:
                 raise ValueError("Cannot determine hop_size_second from data_root")
+            
+        self.hop_size_second = hop_size_second
+
         self.max_length_frames = (
             int(np.ceil(max_length_second / hop_size_second) + 1)
             if max_length_second is not None
             else None
         )
+
+        self.augment = augment
+        print("\n\n!!!!AUGMENTATION IS ON!!!!\n\n")
 
         super().__init__(student_information=student_information, data_root=data_root)
 
@@ -120,6 +129,34 @@ class PitchDataset(GenericSubdataset):
         f0 = f0[time_filt]
         confidence = confidence[time_filt]
         bool_masks = bool_masks[time_filt]
+
+        if self.augment:
+
+            tempo_rate = np.random.randint(90, 111)
+            if tempo_rate != 100:
+                if tempo_rate > 100:
+                    up = tempo_rate
+                    down = 100
+                else:
+                    up = 100
+                    down = tempo_rate
+
+                f0 = scipy.signal.resample_poly(f0, up, down)
+                confidence = scipy.signal.resample_poly(confidence, up, down)
+                bool_masks = scipy.signal.resample_poly(bool_masks, up, down).round().astype(bool)
+            
+            tshift = np.random.uniform(-10, 10) / self.hop_size_second
+            tshift = int(np.round(tshift))
+            f0 = np.roll(f0, tshift)
+        
+            if tshift > 0:
+                f0[:int(tshift)] = 0
+                confidence[:int(tshift)] = 0
+                bool_masks[:int(tshift)] = False
+            else:
+                f0[int(tshift):] = 0
+                confidence[int(tshift):] = 0
+                bool_masks[int(tshift):] = False
 
         if self.max_length_frames is not None:
             nf0 = f0.shape[0]

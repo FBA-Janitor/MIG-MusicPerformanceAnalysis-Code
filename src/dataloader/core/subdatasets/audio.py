@@ -4,10 +4,12 @@ from typing import List, Tuple
 
 import librosa
 import numpy as np
+import torch
 
 from . import GenericSubdataset
 from ..preprocess.segment_feature import extract_segment_feature
 
+import math
 
 class AudioBaseDataset(GenericSubdataset):
     def __init__(
@@ -15,11 +17,30 @@ class AudioBaseDataset(GenericSubdataset):
         student_information: List[Tuple],
         data_root: str,
         sr=22050,
+        pad=True,
+        max_length_second=None,
+        clip_length_second=None,
+        deterministic=True,
     ) -> None:
         
 
         self.sr = sr
         super().__init__(student_information=student_information, data_root=data_root)
+
+        if pad:
+            assert max_length_second is not None
+
+        self.pad = pad
+
+        self.clip_length_second = clip_length_second
+        self.clip_length_samples = math.ceil(clip_length_second * sr) if clip_length_second is not None else None
+
+        
+        self.max_length_second = min(max_length_second, clip_length_second) if clip_length_second is not None else max_length_second
+        self.max_length_samples = math.ceil(max_length_second * sr) if max_length_second is not None else None
+
+        self.deterministic = deterministic
+
 
     def read_data_file(self, data_path, start=None, end=None, segment=None):
         return self.read_audio(data_path, start=start, end=end, segment=segment)
@@ -36,7 +57,40 @@ class AudioBaseDataset(GenericSubdataset):
         if end is not None:
             end = np.round(end * self.sr).astype(int) + 1
 
-        return y[start:end]
+        if self.clip_length_samples:
+            if self.deterministic:
+                end = start + self.clip_length_samples
+            if end - start > self.clip_length_samples:
+                start = np.random.randint(start, end - self.clip_length_samples)
+                end = start + self.clip_length_samples
+
+        y = y[start:end]
+        
+        mask = np.ones_like(y, dtype=bool)
+        out =  {
+            "audio": y,
+            "mask": mask,
+            "length": len(y),
+        }
+
+        if not self.pad:
+            return out
+        
+        if len(y) > self.max_length_samples:
+            y = y[:self.max_length_samples]
+            mask = mask[:self.max_length_samples]
+        else:
+            y = np.pad(y, (0, self.max_length_samples - len(y)), mode="constant")
+            mask = np.pad(mask, (0, self.max_length_samples - len(mask)), mode="constant")
+
+        out =  {
+            "audio": y,
+            "mask": mask,
+            "length": len(y),
+        }
+
+        return out
+        
 
     def _load_data_path(self):
 

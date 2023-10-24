@@ -26,7 +26,9 @@ class FBADataset(GenericDataset):
         feature_data_root="/media/fba/tmp_audio_feature",
         segment_data_root="/media/fba/MIG-FBA-Data-Cleaning/cleaned/segmentation/bystudent",
         algosegment_data_root="/media/fba/MIG-FBA-Segmentation/cleaned/algo-segmentation/bystudent",
-        conditions=None
+        conditions=None,
+        f0_kwargs={},
+        audio_kwargs={},
     ) -> None:
         super().__init__()
 
@@ -47,15 +49,21 @@ class FBADataset(GenericDataset):
         self.student_information = self.segment_ds.student_information
 
         if use_audio:
-            self.subdatasets["audio"] = AudioMelSpecDataset(
+            # self.subdatasets["audio"] = AudioMelSpecDataset(
+            #     self.student_information,
+            #     data_root=audio_data_root,
+            # )
+            self.subdatasets["audio"] = AudioBaseDataset(
                 self.student_information,
                 data_root=audio_data_root,
+                max_length_second=self.max_length,
+                **audio_kwargs
             )
             self.student_information = self.subdatasets["audio"].student_information
 
         if use_f0:
             self.subdatasets["f0"] = PitchDataset(
-                self.student_information, data_root=f0_data_root, to_midi=True, max_length_second=self.max_length
+                self.student_information, data_root=f0_data_root, to_midi=True, max_length_second=self.max_length, **f0_kwargs
             )
             self.student_information = self.subdatasets["f0"].student_information
 

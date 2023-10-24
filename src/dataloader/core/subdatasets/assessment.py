@@ -26,6 +26,19 @@ def abbreviate_description(description):
     raise ValueError(f"Unknown description {description}")
 
 
+def quantize(x):
+
+    if x < 0.2:
+        return 0.1
+    elif x < 0.4:
+        return 0.25
+    elif x <= 0.6:
+        return 0.5
+    elif x <= 0.8:
+        return 0.75
+    else:
+        return 0.9
+
 
 class AssessmentDataset(GenericSubdataset):
     def __init__(
@@ -36,6 +49,7 @@ class AssessmentDataset(GenericSubdataset):
         assessments=None,
         use_normalized=True,
         output_format="array",
+        quantized=True,
     ) -> None:
         assert use_normalized, "Only normalized data is available."
         self.use_normalized = use_normalized
@@ -43,10 +57,17 @@ class AssessmentDataset(GenericSubdataset):
 
         if assessments is None:
             assessments = sorted(["musicality", "note", "rhythm", "tone"])
+        else:
+            assessments = sorted([abbreviate_description(a) for a in assessments])
 
         self.assessments = assessments
 
         self.output_format = output_format
+
+        if quantized:
+            self.quantize = quantize
+        else:
+            self.quantize = lambda x: x
 
         super().__init__(student_information=student_information, data_root=data_root)
 
@@ -149,7 +170,7 @@ class AssessmentDataset(GenericSubdataset):
         )
 
         out = {
-            description: df[description]
+            description: self.quantize(df[description])
             for description in self.assessments
         }
 

@@ -94,7 +94,15 @@ class SegmentDataset(GenericSubdataset):
         for sid in self.student_ids:
             start, end = self.get_item_by_student_id(sid)[segment_id]
             lengths.append(end - start)
-        return np.max(lengths)
+
+        print("Median length of segment {} is {} seconds.".format(segment_id, np.median(lengths)))
+        print("Mean length of segment {} is {} seconds.".format(segment_id, np.mean(lengths)))
+        print("75% percentile length of segment {} is {} seconds.".format(segment_id, np.percentile(lengths, 75)))
+        print("90% percentile length of segment {} is {} seconds.".format(segment_id, np.percentile(lengths, 90)))
+        print("95% percentile length of segment {} is {} seconds.".format(segment_id, np.percentile(lengths, 95)))
+        print("99% percentile length of segment {} is {} seconds.".format(segment_id, np.percentile(lengths, 99)))
+
+        return np.percentile(lengths, 100)
 
 if __name__ == "__main__":
     
