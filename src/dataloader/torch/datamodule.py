@@ -41,10 +41,11 @@ class FBADataModule(pl.LightningDataModule):
         dataset_kwargs: Dict = {},
         train_kwargs: Dict = {},
         val_kwargs: Dict = {},
+        test_kwargs: Dict = {},
         batch_size: int = 32,
         num_workers: int = 2,
         shuffle_train: bool = True,
-        shuffle_val: bool = True,
+        shuffle_val: bool = False,
         split_path="/media/fba/MIG-MusicPerformanceAnalysis-Code/src/split",
         verbose=False,
     ) -> None:
@@ -60,11 +61,13 @@ class FBADataModule(pl.LightningDataModule):
         self.dataset_kwargs = dataset_kwargs
         self.train_kwargs = train_kwargs
         self.val_kwargs = val_kwargs
+        self.test_kwargs = test_kwargs
 
         self.verbose = verbose
 
         self.train_info = self.get_split_ids("train", year_band_inst)
-        self.val_info = self.get_split_ids("valtest", year_band_inst)
+        self.val_info = self.get_split_ids("val", year_band_inst)
+        self.test_info = self.get_split_ids("test", year_band_inst)
 
         # np.savez("/data/kwatchar3/fba/ProbabilisticMPA/split_info.npz", train=self.train_info, val=self.val_info)
 
@@ -95,7 +98,6 @@ class FBADataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(
             FBADataset(self.train_info, {**self.dataset_kwargs, **self.train_kwargs}),
-            # collate_fn=fba_collate,
             batch_size=self.batch_size,
             shuffle=self.shuffle_train,
             num_workers=self.num_workers,
@@ -107,6 +109,15 @@ class FBADataModule(pl.LightningDataModule):
             FBADataset(self.val_info, {**self.dataset_kwargs, **self.val_kwargs}),
             batch_size=self.batch_size,
             shuffle=self.shuffle_val,
+            num_workers=self.num_workers,
+            drop_last=True,
+        )
+    
+    def test_dataloader(self):
+        return DataLoader(
+            FBADataset(self.test_info, {**self.dataset_kwargs, **self.test_kwargs}),
+            batch_size=self.batch_size,
+            shuffle=False,
             num_workers=self.num_workers,
             drop_last=True,
         )

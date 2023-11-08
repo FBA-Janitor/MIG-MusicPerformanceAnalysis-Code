@@ -29,6 +29,7 @@ class FBADataset(GenericDataset):
         conditions=None,
         f0_kwargs={},
         audio_kwargs={},
+        assessment_kwargs={},
     ) -> None:
         super().__init__()
 
@@ -48,11 +49,8 @@ class FBADataset(GenericDataset):
 
         self.student_information = self.segment_ds.student_information
 
+
         if use_audio:
-            # self.subdatasets["audio"] = AudioMelSpecDataset(
-            #     self.student_information,
-            #     data_root=audio_data_root,
-            # )
             self.subdatasets["audio"] = AudioBaseDataset(
                 self.student_information,
                 data_root=audio_data_root,
@@ -68,12 +66,11 @@ class FBADataset(GenericDataset):
             self.student_information = self.subdatasets["f0"].student_information
 
         if use_assessment:
-
             if assessments is None:
                 assessments = ["musicality", "rhythm", "note", "tone"]
 
             self.subdatasets["assessment"] = AssessmentDataset(
-                self.student_information, data_root=assessment_data_root, segment=segment, assessments=assessments
+                self.student_information, data_root=assessment_data_root, segment=segment, assessments=assessments, **assessment_kwargs
             )
             self.student_information = self.subdatasets["assessment"].student_information
 
@@ -81,9 +78,14 @@ class FBADataset(GenericDataset):
         self.student_ids = [
             student_id for student_id, _, _ in self.student_information
         ]
-        self.length = len(self.student_information)
 
         self.conditions = conditions
+
+        
+        self.length = len(self.student_information)
+
+
+        print("Dataset initialized. Length: {}".format(self.length))
 
     def get_item_by_student_id(self, sid):
 
@@ -119,6 +121,7 @@ class FBADataset(GenericDataset):
             raise NotImplementedError
 
     def get_item_by_index(self, idx):
+
         return self.get_item_by_student_id(self.student_ids[idx])
 
     def __getitem__(self, index):

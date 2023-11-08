@@ -34,11 +34,13 @@ def filename_to_id_check(filename):
 
     _, basename = os.path.split(filename)
 
-    out = re.match(r"(\d{5})(.*)?\.mp3", basename)
+    out = re.match(r"(\d{5,6})(.*)?\.mp3", basename)
 
     sid, suffix = out.groups()
 
     valid = len(suffix) == 0
+
+    # print(filename, sid, valid)
 
     return int(sid), valid
 
@@ -100,6 +102,8 @@ def get_task_list(
 
     for file in tqdm(files):
         sid, valid = filename_to_id_check(file)
+
+        # print(sid, valid)
 
         if sid in sid_error_list:
             error_entry = error_list[sid_error_list.index(sid)]

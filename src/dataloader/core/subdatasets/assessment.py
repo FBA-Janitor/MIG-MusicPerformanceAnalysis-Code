@@ -126,9 +126,9 @@ class AssessmentDataset(GenericSubdataset):
                 set(student_ids_in_info)
             )
 
-            validated_student_information.extend(
-                [(sid, year, band) for sid in common_student_ids]
-            )
+            for sid_, _, _, in self.student_information:
+                if int(sid_) in common_student_ids:
+                    validated_student_information.append((sid_, year, band))
 
         return validated_student_information
 

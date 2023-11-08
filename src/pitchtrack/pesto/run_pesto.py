@@ -16,6 +16,12 @@ from librosa import load as lload
 import numpy as np
 import pandas as pd
 
+from torch.nn import functional as F
+
+import wave
+
+from pydub.utils import mediainfo
+
 import pesto
 
 from pesto.core import load_dataprocessor, load_model, reduce_activation, export
@@ -92,9 +98,9 @@ def predict(
     # apply model
     cqt = data_preprocessor(x)
     try:
-        activations = torch.cat([
-            model(chunk) for chunk in cqt.split(chunk_size)
-        ])
+        inputs = list(cqt.split(chunk_size, dim=0))
+        activations = torch.cat([model(input_) for input_ in inputs], dim=0)
+
     except torch.cuda.OutOfMemoryError:
         raise torch.cuda.OutOfMemoryError("Got an out-of-memory error while performing pitch estimation. "
                                           "Please increase the number of chunks with option `-c`/`--chunks` "
@@ -128,11 +134,11 @@ def run_pesto(
     fs=22050,
     model_name="mir-1k",
     no_convert_to_freq=True,
-    step_size: float = 10.,
+    step_size_ms: float = 256/44100*1000,
     reduction: str = "alwa",
     export_format: Sequence[str] = ("csv",),
     gpu=0,
-    chunk_size=2**14
+    chunk_size=2**13
 ):
     try:
         if gpu >= 0 and not torch.cuda.is_available():
@@ -141,7 +147,7 @@ def run_pesto(
         device = torch.device(f"cuda:{gpu:d}" if gpu >= 0 else "cpu")
 
         # define data preprocessing
-        data_preprocessor = load_dataprocessor(step_size / 1000., device=device)
+        data_preprocessor = load_dataprocessor(step_size_ms / 1000., device=device)
 
         # define model
         model = load_model(model_name, device=device)#.to(device)
@@ -154,17 +160,12 @@ def run_pesto(
             x = torchaudio.functional.resample(x, sr, fs)
             sr = fs
 
-            
-        x = x.to(device)
-
-        
         x = x.to(device)
 
         # compute the predictions
         predictions = predict(x, sr, model=model, data_preprocessor=data_preprocessor, reduction=reduction,
                                 convert_to_freq=not no_convert_to_freq, chunk_size=chunk_size)
 
-        
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
         predictions = [p.cpu().numpy() for p in predictions]
@@ -175,21 +176,24 @@ def run_pesto(
 
 def process(
     audio_root="/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent",
-    pesto_root="/media/fba/MIG-FBA-PitchTracking/cleaned/pitchtrack_pesto",
+    subfolder="",
+    pesto_root="/media/fba/MIG-FBA-PitchTracking/cleaned/pitchtrack_pesto_5805us",
 ):
 
-    wav_paths = sorted(glob.glob(audio_root + "/**/*.wav", recursive=True))
+    wav_paths = sorted(glob.glob(os.path.join(audio_root, str(subfolder), "**/*.wav"), recursive=True))
     out_paths = [wav_path.replace(audio_root, pesto_root).replace('.wav', '') for wav_path in wav_paths]
 
-    process_map(run_pesto, wav_paths, out_paths, max_workers=3, chunksize=1, total=len(wav_paths))
+    # run_pesto(wav_paths[0], out_paths[0])
+
+    process_map(run_pesto, wav_paths, out_paths, max_workers=4, chunksize=1, total=len(wav_paths))
 
 def checkfs(wav_path):
-    _, fs = sf.read(wav_path, stop=1)
+    fs = mediainfo(wav_path)['sample_rate']
     return {'file': wav_path, 'fs': fs}
 
-def checkfs_all(audio_root="/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent"):
-    wav_paths = sorted(glob.glob(audio_root + "/**/*.wav", recursive=True))
-    fs = process_map(checkfs, wav_paths, max_workers=64, chunksize=128, total=len(wav_paths))
+def checkfs_all(audio_root="/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent", ext='wav'):
+    wav_paths = sorted(glob.glob(audio_root + f"/**/*.{ext}", recursive=True))
+    fs = process_map(checkfs, wav_paths, max_workers=16, chunksize=16, total=len(wav_paths))
 
     df = pd.DataFrame(fs)
     df.to_csv('fs.csv', index=False)
@@ -198,4 +202,4 @@ def checkfs_all(audio_root="/media/fba/MIG-FBA-Audio/cleaned/audio/bystudent"):
 
 if __name__ == "__main__":
     import fire
-    fire.Fire()
+    fire.Fire() 

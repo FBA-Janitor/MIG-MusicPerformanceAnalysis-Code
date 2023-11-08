@@ -15,6 +15,7 @@ LowerClarinetsType = Literal[
 ClarinetType = Union[UpperClarinetsType, LowerClarinetsType]
 
 UpperSaxType = Literal["Soprano Sax", "Alto Saxophone"]
+AltoSaxType = Literal["Alto Saxophone"]
 LowerSaxType = Literal["Tenor Saxophone", "Bari Saxophone"]
 SaxType = Union[UpperSaxType, LowerSaxType]
 

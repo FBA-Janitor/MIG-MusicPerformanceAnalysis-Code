@@ -23,3 +23,7 @@ audio:
     concert: "./fba-canonical/audio/2018-2019/concertband"
     middle: "./fba-canonical/audio/2018-2019/middleschool"
     symphonic: "./fba-canonical/audio/2018-2019/symphonicband"
+  2021:
+    concert: "./MIG-FBA-Audio/new_download/audio/bystudent/2021/concert"
+    middle: "./MIG-FBA-Audio/new_download/audio/bystudent/2021/middle"
+    symphonic: "./MIG-FBA-Audio/new_download/audio/bystudent/2021/symphonic"
