@@ -95,3 +95,27 @@ assessment_scores:
       excel:
         ./fba-canonical/audio/2021-2022/FBA All-State Symphonic Band 2021-2022.xlsx
       sheet: Sheet1
+
+  2022:
+    concert:
+      excel: ./fba-canonical/audio/2022-2023/2022-2023 Concert Band.xlsx
+      sheet: Sheet1
+    middle:
+      excel: ./fba-canonical/audio/2022-2023/2022-2023 MS Band.xlsx
+      sheet: Sheet1
+    symphonic:
+      excel:
+        ./fba-canonical/audio/2022-2023/2022-2023 Symphonic Band.xlsx
+      sheet: Sheet1
+
+  2023:
+    concert:
+      excel: ./fba-canonical/audio/2023-2024/2023-2024 Concert Band.xlsx
+      sheet: Sheet1
+    middle:
+      excel: ./fba-canonical/audio/2023-2024/2023-2024 MS Band.xlsx
+      sheet: Sheet1
+    symphonic:
+      excel:
+        ./fba-canonical/audio/2023-2024/2023-2024 Symphonic Band.xlsx
+      sheet: Sheet1

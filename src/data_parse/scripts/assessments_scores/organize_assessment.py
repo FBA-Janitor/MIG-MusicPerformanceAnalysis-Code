@@ -2,7 +2,8 @@ import os
 from tqdm import tqdm
 from itertools import product
 from typing import Optional
-
+import sys
+sys.path.append('../')
 import pandas as pd
 
 from utils.utils import read_yaml_to_dict
@@ -701,6 +702,12 @@ def process_multiyear(
     yearbands = list(product(years, bands))
 
     for year, band in tqdm(yearbands):
+        
+        if year in [2019, 2020]:
+            continue
+        
+        print(f"Year: {year}, Band: {band}")
+        
         process(
             root,
             year,
@@ -718,6 +725,5 @@ def process_multiyear(
 
 
 if __name__ == "__main__":
-    import fire
 
-    fire.Fire()
+    process_multiyear("/home/tma98/fba", first_year=2021, last_year=2021)

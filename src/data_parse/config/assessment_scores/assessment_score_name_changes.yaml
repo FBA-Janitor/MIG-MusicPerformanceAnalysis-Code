@@ -215,6 +215,12 @@ assessments:
         BandLevel: [concert, middle, symphonic]
       - Year: 2018
         BandLevel: [concert, middle, symphonic]
+      - Year: 2021
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2022
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2023
+        BandLevel: [concert, middle, symphonic]
     Reason: Variant
   
   - OldScoreGroup: Sight-Reading
@@ -233,6 +239,12 @@ assessments:
         BandLevel: [concert, middle, symphonic]
       - Year: 2018
         BandLevel: [concert, middle, symphonic]
+      - Year: 2021
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2022
+        BandLevel: [concert, middle, symphonic]
+      - Year: 2023
+        BandLevel: [concert, middle, symphonic]
     Reason: Variant
 
   - OldScoreGroup: Technical Etude
@@ -246,6 +258,12 @@ assessments:
       - Year: 2017
         BandLevel: [middle]
       - Year: 2018
+        BandLevel: [middle]
+      - Year: 2021
+        BandLevel: [middle]
+      - Year: 2022
+        BandLevel: [middle]
+      - Year: 2023
         BandLevel: [middle]
     Reason: Variant
 
@@ -264,6 +282,12 @@ assessments:
       - Year: 2017
         BandLevel: [concert, symphonic]
       - Year: 2018
+        BandLevel: [concert, symphonic]
+      - Year: 2021
+        BandLevel: [concert, symphonic]
+      - Year: 2022
+        BandLevel: [concert, symphonic]
+      - Year: 2023
         BandLevel: [concert, symphonic]
     Reason: Variant
 
@@ -283,6 +307,12 @@ assessments:
         BandLevel: [concert, symphonic]
       - Year: 2018
         BandLevel: [concert, symphonic]
+      - Year: 2021
+        BandLevel: [concert, symphonic]
+      - Year: 2022
+        BandLevel: [concert, symphonic]
+      - Year: 2023
+        BandLevel: [concert, symphonic]
     Reason: Variant
 
   - OldScoreGroup: Reading-Mallet
@@ -300,6 +330,12 @@ assessments:
       - Year: 2017
         BandLevel: [symphonic]
       - Year: 2018
+        BandLevel: [symphonic]
+      - Year: 2021
+        BandLevel: [symphonic]
+      - Year: 2022
+        BandLevel: [symphonic]
+      - Year: 2023
         BandLevel: [symphonic]
     Reason: Similar
 
@@ -319,6 +355,15 @@ assessments:
       - Year: 2018
         BandLevel:
           - concert
+      - Year: 2021
+        BandLevel:
+          - concert
+      - Year: 2022
+        BandLevel:
+          - concert
+      - Year: 2023
+        BandLevel:
+          - concert
     Reason: Variant
 
   - OldScoreGroup: Reading-Mallet
@@ -332,6 +377,12 @@ assessments:
       - Year: 2017
         BandLevel: [middle]
       - Year: 2018
+        BandLevel: [middle]
+      - Year: 2021
+        BandLevel: [middle]
+      - Year: 2022
+        BandLevel: [middle]
+      - Year: 2023
         BandLevel: [middle]
     Reason: Variant
 
@@ -353,11 +404,15 @@ assessments:
         BandLevel: [concert, symphonic]
       - Year: 2016
         BandLevel: [concert, symphonic]
-
       - Year: 2017
         BandLevel: [concert, symphonic]
-
       - Year: 2018
+        BandLevel: [concert, symphonic]
+      - Year: 2021
+        BandLevel: [concert, symphonic]
+      - Year: 2022
+        BandLevel: [concert, symphonic]
+      - Year: 2023
         BandLevel: [concert, symphonic]
     Reason: Variant
 
@@ -376,6 +431,12 @@ assessments:
       - Year: 2017
         BandLevel: [symphonic]
       - Year: 2018
+        BandLevel: [symphonic]
+      - Year: 2021
+        BandLevel: [symphonic]
+      - Year: 2022
+        BandLevel: [symphonic]
+      - Year: 2023
         BandLevel: [symphonic]
     Reason: Similar
 
