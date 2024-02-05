@@ -1,3 +1,9 @@
+"""
+Feb 04, 2024 @suncerock
+
+This file is used to train an SVM model that do frame-wise classification
+"""
+
 import pickle
 import warnings
 
@@ -9,7 +15,7 @@ from utils.default_configs_path import (
     feature_write_dir,
     train_csv_list
 )
-from utils.utils import *
+from utils.utils import _load_data, _normalize_data
 
 warnings.filterwarnings("ignore")
 
@@ -47,8 +53,8 @@ def train_svm(
     ----------
     None
     """
-    X_train, y_train = load_data(train_csv_list, feature_dir, sr, block_size, hop_size)
-    X_train = normalize_data(X_train)
+    X_train, y_train = _load_data(train_csv_list, feature_dir, sr, block_size, hop_size)
+    X_train = _normalize_data(X_train, force_regenerate=True)
     print("Training: {} frames!".format(len(y_train)))
     model = SVC(kernel='linear')
     model.fit(X_train, y_train)

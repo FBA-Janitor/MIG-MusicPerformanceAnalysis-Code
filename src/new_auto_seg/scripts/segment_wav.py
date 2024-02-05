@@ -6,7 +6,6 @@ from typing import Optional, Union
 from tqdm import tqdm
 import warnings
 
-import librosa
 import sklearn
 import numpy as np
 
@@ -20,7 +19,7 @@ from utils.default_configs_path import (
     feature_write_dir
 )
 from utils.feature import *
-from utils.utils import normalize_data
+from utils.utils import _normalize_data, _load_and_normalize_audio
 
 warnings.filterwarnings("ignore")
 
@@ -157,8 +156,8 @@ def segment_audio(
         _, basename = os.path.split(audio_path)
         stu_id, _ = re.match(r"(\d{5})(\.mp3)", basename).groups()
 
-        y, _ = librosa.load(audio_path, sr=sr, mono=True)
-        
+        y = _load_and_normalize_audio(audio_path, sr=sr)
+
         # write feature into feature_write_dir
         feature, time_stamp = write_feature(y, stu_id, feature_write_dir, sr, block_size, hop_size)
     else:   # use feature file
@@ -173,7 +172,7 @@ def segment_audio(
     assert isinstance(model, sklearn.svm.SVC),\
         "Expect model to be sklearn.svm.SVC, but got {}".format(type(model))
 
-    feature = normalize_data(feature)
+    feature = _normalize_data(feature)
     pred = model.predict(feature)
 
     # stage 1 post-processing
@@ -248,9 +247,13 @@ def segment_dir(
     with open(model_path, 'rb') as f:
         model = pickle.load(f)
 
-    if from_feature:  # directory/stu_id.mp3
+    if not os.path.exists(output_dir):
+        print("Missing output folder: {}! Making...".format(output_dir))
+        os.mkdir(output_dir)
+
+    if from_feature:  # directory/stu_id.npz
         files = sorted(glob.glob(os.path.join(input_dir, '*.npz'), recursive=True))
-    else:
+    else:  # directory/stu_id/stu_id.mp3
         files = sorted(glob.glob(os.path.join(input_dir, '**/*.mp3'), recursive=True))
 
     stage_1_success = []

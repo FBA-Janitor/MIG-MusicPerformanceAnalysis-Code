@@ -1,3 +1,13 @@
+"""
+Feb 03, 2024 @suncerock
+
+This file is used to generate audio-segment pair metadata
+which will then be used to train/evaluate the auto-segmentation system.
+
+The main function is generate_multi_group().
+You should NEVER call the other two functions explicitly!!!
+"""
+
 import os
 from itertools import product
 from tqdm import tqdm
@@ -10,13 +20,13 @@ from utils.default_configs_path import (
     segment_status_csv
 )
 
-def write_audio_seg_csv(audio_seg, output_csv):
+def _write_audio_seg_csv(audio_seg, output_csv):
     f = open(output_csv, 'w')
     for stu_id, audio_file, segment_file in audio_seg:
         f.write("{},{},{}\n".format(stu_id, audio_file, segment_file))
     f.close()
 
-def generate(
+def _generate(
     root_audio_dir,
     root_segment_dir,
     output_dir,
@@ -25,6 +35,35 @@ def generate(
     instrument,
     summary_df
 ):
+    """
+    This is an internal function that should not be called by users.
+    Generate audio-segment pair metadata for one (year, band, instrument) group.
+    Write the results into a .csv file in the output directory.
+
+    Parameters
+    ----------
+    root_audio_dir : str
+        root directory of the audio files
+    root_segment_dir : str
+        root directory of the manually labeled segmentation files
+    output_dir : str
+        directory to output the metadata
+    year : int
+        the year of the group
+    band : str
+        the band of the group
+    instrument : str
+        the instrument of the group
+    summary_df : pd.DataFrame
+        the DataFrame of the group
+        Note that the DataFrame has already been filtered by (year, band, instrument),
+        and thus the (year, band, instrument) are used only for naming the output file and finding the folders
+    
+    Return
+    ----------
+    None
+
+    """
     audio_folder = os.path.join(root_audio_dir, "bystudent", str(year), band)
     segment_folder = os.path.join(root_segment_dir, "bystudent", str(year), band)
 
@@ -48,10 +87,14 @@ def generate(
             continue
         id_audio_seg.append((stu_id, audio_file, segment_file))
 
-    output_csv = os.path.join(output_dir, "{}_{}_{}_audio_seg.csv".format(year, band, instrument.replace(" ", "")))
-    write_audio_seg_csv(id_audio_seg, output_csv)
+    if not os.path.exists(output_dir):
+        print("Missing output folder: {}! Making...".format(output_dir))
+        os.mkdir(output_dir)
 
-def generate_multi_year(
+    output_csv = os.path.join(output_dir, "{}_{}_{}_audio_seg.csv".format(year, band, instrument.replace(" ", "")))
+    _write_audio_seg_csv(id_audio_seg, output_csv)
+
+def generate_multi_group(
     output_dir,
     root_audio_dir=audio_dir,
     root_segment_dir=segment_dir,
@@ -64,7 +107,33 @@ def generate_multi_year(
     segment_status_csv=segment_status_csv
 ):
     """
-    TODO add documentation
+    This is the main function that users should call.
+    Generate audio-segment pair metadata for multiple (year, band, instrument) groups.
+    Write the results into a .csv file in the output directory.
+
+    Parameters
+    ----------
+    output_dir : str
+        directory to output the metadata
+    root_audio_dir : Optional[str]
+        root directory of the audio files. Default: audio_dir (in the default config file)
+    root_segment_dir : Optional[str]
+        root directory of the manually labeled segmentation files. Default: segment_dir (in the default config file)
+    first_year : Optional[int]
+    last_year : Optional[int]
+        generate metadata from first year to last year. Default: 2013 and 2018
+    middle : Optional[bool]
+    concert : Optional[bool]
+    symphonic : Optional[bool]
+        whether to generate the metadata of middle/concert/symphonic group. Default: True
+    instruments : Optional[List[str]]
+        which instruments to include. If None, include all instruments. Default: None
+    segment_status_csv : Optional[str]
+        path to the csv metadata that contains segmentation status for the data. Default: 
+
+    Return
+    ----------
+    None
     """
     df = pd.read_csv(segment_status_csv)
 
@@ -93,7 +162,7 @@ def generate_multi_year(
     yearbands = list(product(years, bands, instruments))
     
     for year, band, instrument in tqdm(yearbands):
-        generate(
+        _generate(
             root_audio_dir,
             root_segment_dir,
             output_dir,
@@ -107,4 +176,4 @@ def generate_multi_year(
 if __name__ == "__main__":
     import fire
 
-    fire.Fire()
+    fire.Fire(generate_multi_group)

@@ -26,12 +26,12 @@ The `input_dir` should be a directory containing extracted features, and the fol
 To train a new SVM model, you should first generate the `csv` files of training data by running
 
 ```
-python generate_audio_segment.py generate_multi_year --output_dir <output_dir> --root_audio_dir <audio_dir> --root_segment_dir <segment_dir>
+python generate_audio_seg_path.py --output_dir <output_dir> --root_audio_dir <audio_dir> --root_segment_dir <segment_dir>
 ```
 
 - `output_dir` is the directory to save the `csv` files
-- `audio_dir` is the audio directory of the data repo
-- `segment_dir` is the segmentation directory of the data repo
+- `audio_dir` is the audio directory of the data repo. Default: `audio_dir` in [default config](scripts/utils/default_configs_path.py)
+- `segment_dir` is the (manually labeled) segmentation directory of the data repo. Default: `segment_dir` in [default config](scripts/utils/default_configs_path.py)
 
 Then to train the model, run
 
@@ -72,3 +72,9 @@ The evaluation results are below
 | 2014 concert | 96.75 | 93.34 | 89.82 | 96.36 | 96.76 | 97.41 |
 | 2014 middle  | 95.22 | 91.20 | 87.59 | 93.34 | 95.56 | 96.96 |
 | 2015 concert | 96.78 | 93.69 | 90.03 | 97.36 | 96.77 | 97.43 |
+
+### 2024_happy_new_year_model.pth
+The `2024_happy_new_year_model.pth` is trained in Feb 2023. It normalize the audio when read the audio so that it does not drive our advisor crazy.
+
+## Updates
+- Feb 04, 2024: Documentations updated. Functions renamed: now all the internal function names start with an underscore
