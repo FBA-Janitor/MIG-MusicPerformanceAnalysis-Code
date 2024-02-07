@@ -43,8 +43,8 @@ You might want to change the training data, the segment status file, the tempora
 
 ## Model details
 
-### 2023_happy_new_year_model.pth
-The `2023_happy_new_year_model.pth` is trained in Jan 2023.
+### 2024_happy_new_year_model.pth
+The `2024_happy_new_year_model.pth` is trained in Feb 2024.
 
 The training uses the data below
 
@@ -65,13 +65,14 @@ The training uses the data below
 
 The evaluation results are below
 
-| Test data    | Seg1  | Seg2  | Seg3  | Seg4  | Seg5  | Piece |
-| :----------: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 2013 concert | 96.75 | 94.02 | 90.61 | 96.88 | 96.87 | 97.65 |
-| 2013 middle  | 95.11 | 92.37 | 89.28 | 95.78 | 96.63 | 97.13 |
-| 2014 concert | 96.75 | 93.34 | 89.82 | 96.36 | 96.76 | 97.41 |
-| 2014 middle  | 95.22 | 91.20 | 87.59 | 93.34 | 95.56 | 96.96 |
-| 2015 concert | 96.78 | 93.69 | 90.03 | 97.36 | 96.77 | 97.43 |
+| Test data                     | Seg1  | Seg2  | Seg3  | Seg4  | Seg5  | Piece | Success |
+| :---------------------------: | :---: | :---: | :---: | :---: | :---: | :---: | :-----: |
+| 2015 middle  AltoSaxophone    | 94.56 | 88.52 | 87.15 | 95.46 | 96.40 | 96.22 | 120/122 |
+| 2015 middle  BbClarinet       | 96.13 | 91.16 | 87.39 | 93.06 | 95.65 | 97.21 | 164/167 |
+| 2015 middle  Flute            | 95.08 | 93.12 | 90.48 | 95.52 | 96.53 | 97.02 | 178/180 |
+| 2016 concert AltoSaxophone    | 88.50 | 83.58 | 76.82 | 90.96 | 93.05 | 94.77 | 124/134 |
+| 2016 middle  AltoSaxophone    | 91.88 | 84.43 | 80.51 | 91.91 | 93.79 | 93.79 | 111/111 |
+| 2016 middle  BbClarinet       | 95.63 | 94.39 | 87.21 | 93.58 | 95.40 | 97.09 | 140/148 |
 
 ### 2024_happy_new_year_model.pth
 The `2024_happy_new_year_model.pth` is trained in Feb 2023. It normalize the audio when read the audio so that it does not drive our advisor crazy.
