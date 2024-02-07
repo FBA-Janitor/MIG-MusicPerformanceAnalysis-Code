@@ -36,7 +36,7 @@ python generate_audio_seg_path.py --output_dir <output_dir> --root_audio_dir <au
 Then to train the model, run
 
 ```
-python fire train_svm.py train_svm
+python train_svm.py
 ```
 
 You might want to change the training data, the segment status file, the temporary feature folder and the model save pth in [default config path](scripts/utils/default_configs_path.py)
