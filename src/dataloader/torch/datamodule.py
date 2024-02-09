@@ -5,33 +5,6 @@ import pytorch_lightning as pl
 import numpy as np
 from torch.utils.data import DataLoader
 from .dataset import FBADataset
-from torch.utils.data._utils.collate import collate, default_collate_fn_map, collate_numpy_array_fn
-
-
-fba_collate_fn_map = {
-    **default_collate_fn_map,
-}
-
-
-def collate_numpy_array_fba_fn(batch, *, collate_fn_map = None):
-    if np.array_equal(batch[0].shape[-1] * np.ones(len(batch)), np.array([x.shape[-1] for x in batch])):
-        return collate_numpy_array_fn(batch)
-    else:
-        max_len = max([x.shape[-1] for x in batch])
-        return collate_numpy_array_fn(
-            [
-                np.pad(
-                    x, (0, max_len - x.shape[-1]), mode="constant", constant_values=0.0 
-                ) for x in batch
-            ]
-        )
-
-
-
-fba_collate_fn_map[np.ndarray] = collate_numpy_array_fba_fn
-
-def fba_collate(batch):
-    return collate(batch, collate_fn_map=fba_collate_fn_map)
 
 
 class FBADataModule(pl.LightningDataModule):
