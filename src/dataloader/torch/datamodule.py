@@ -74,7 +74,7 @@ class FBADataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             shuffle=self.shuffle_train,
             num_workers=self.num_workers,
-            drop_last=True,
+            drop_last=False,
         )
 
     def val_dataloader(self):
@@ -83,16 +83,16 @@ class FBADataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             shuffle=self.shuffle_val,
             num_workers=self.num_workers,
-            drop_last=True,
+            drop_last=False,
         )
     
     def test_dataloader(self):
         return DataLoader(
             FBADataset(self.test_info, {**self.dataset_kwargs, **self.test_kwargs}),
-            batch_size=self.batch_size,
+            batch_size=1,
             shuffle=False,
             num_workers=self.num_workers,
-            drop_last=True,
+            drop_last=False,
         )
 
 

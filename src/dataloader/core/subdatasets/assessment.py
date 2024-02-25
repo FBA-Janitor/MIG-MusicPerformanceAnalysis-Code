@@ -69,7 +69,7 @@ class AssessmentDataset(GenericSubdataset):
             # TODO: adjust this based on segment
             if self.segment not in ["TechnicalEtude", "LyricalEtude"]:
                 raise NotImplementedError
-            student_ids_in_df = score_count[score_count == 4].index.tolist()
+            student_ids_in_df = score_count[score_count % 4 == 0].index.tolist()
             student_ids_in_info = [
                 int(sid)
                 for sid, y, b in self.student_information
@@ -105,15 +105,15 @@ class AssessmentDataset(GenericSubdataset):
 
         df["Student"] = df["Student"].astype(int)
 
-        df = (
-            df[
+        df = df[
                 (df["Student"] == int(sid))
                 & df["ScoreGroup"].apply(lambda s: s.replace(" ", "") == segment)
-            ][["Description", "NormalizedScore"]]
-            .reset_index(drop=True)
-            .set_index("Description")
-            .to_dict()["NormalizedScore"]
-        )
+            ][["Description", "NormalizedScore"]].reset_index(drop=True)
+
+        if len(df) == 4:
+            df = df.set_index("Description").to_dict()["NormalizedScore"]
+        else:
+            df = df.groupby("Description")["NormalizedScore"].apply(list).to_dict()
 
         out = dict(sorted(df.items()))
 

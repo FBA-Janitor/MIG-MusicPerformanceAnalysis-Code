@@ -17,14 +17,14 @@ class PitchDataset(GenericSubdataset):
         hop_size_second=None,
         oldheader=None,
         filename_format=None,
-        confidence_thresh=-1.0,
+        confidence_thresh=0.4,
     ) -> None:
-        
+
         if oldheader is None:
             if "pitchtrack/bystudent" in data_root:
                 # old style header ("MIDI" instead of "freq" even though it's in Hz)
                 oldheader = True
-            elif "pitchtrack3/bystudent" in data_root:
+            elif "pitchtrack3/bystudent" in data_root or "pitchtrack_pesto" in data_root:
                 # new style header
                 oldheader = False
             else:
@@ -37,6 +37,8 @@ class PitchDataset(GenericSubdataset):
                 filename_format = "{sid}_pyin_pitchtrack.csv"
             elif "pitchtrack3/bystudent" in data_root:
                 filename_format = "{sid}.f0.csv"
+            elif "pitchtrack_pesto" in data_root:
+                filename_format = "{sid}.csv"
             else:
                 raise ValueError("Cannot determine filename_format from data_root")
 
@@ -48,7 +50,7 @@ class PitchDataset(GenericSubdataset):
         if hop_size_second is None:
             if "pitchtrack/bystudent" in data_root:
                 hop_size_second = 256 / 44100 # approx 5.8 milliseconds
-            elif "pitchtrack3/bystudent" in data_root:
+            elif "pitchtrack3/bystudent" in data_root or "pitchtrack_pesto" in data_root:
                 hop_size_second = 10 * 1e-3 # 10 milliseconds
             else:
                 raise ValueError("Cannot determine hop_size_second from data_root")
@@ -151,6 +153,8 @@ class PitchDataset(GenericSubdataset):
             pass
 
         # f0 = np.nan_to_num(f0, nan=0.0, posinf=128.0, neginf=0.0)
+
+        f0[confidence < self.confidence_thresh] = 0.0
 
         return {
             "f0": f0.astype(np.float32),
